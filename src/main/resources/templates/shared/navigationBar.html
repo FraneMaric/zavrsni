@@ -1,0 +1,80 @@
+<html>
+<head>
+    <link rel="stylesheet" type="text/css" href="/lipota.css">
+</head>
+<body>
+    <div class="navigationBar">
+        <nav>
+            <ul id="navList" class="navbar">
+            </ul>
+            <!--<label id="username" class="username"></label>-->
+        </nav>
+    </div>
+</body>
+
+</html>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+
+    $(document).ready(function () {
+        $.ajax({
+            url: "/korisnik/sessionCheck",
+            type: "GET",
+            success: function (data) {
+                if (data == "true") {
+                    getType(function (userType) {
+                        if (userType == "admin") {
+                            $('#navList').append('<li><a href="/korisnik/listAll">Svi korisnici</a></li>');
+                        }
+                    });
+                    $('#navList').append('<li><a href="/file/inbox">Sandučić</a></li>');
+                    getType(function (userType) {
+                        if (userType == "admin"||userType=="postar") {
+                            $('#navList').append('<li><a href="/file/send">Pošalji poruku</a></li>');
+                        }
+                    });
+                    $('#navList').append('<li><a href="/korisnik/logout">Logout</a></li>');
+                    $('#navList').append('<li class="username"><label id="username" class="username"></li>');
+                        getUsername();
+                } else {
+                    $('#navList').append('<li><a href="/korisnik/login">Login</a></li>');
+                    $('#navList').append('<li><a href="/korisnik/create">Registracija</a></li>');
+                }
+            },
+            error: function (xhr, status, error) {
+                console.error(error);
+            }
+        });
+    });
+
+
+    function getUsername() {
+        $.ajax({
+            url: "/korisnik/getUsername",
+            type: "GET",
+            success: function (data) {
+                if (data != null) {
+                    document.getElementById("username").innerHTML = data;
+                }
+            },
+            error: function (xhr, status, error) {
+                console.error(error);
+            }
+        });
+    };
+
+    function getType(callback) {
+        $.ajax({
+            url: "/korisnik/getType",
+            type: "GET",
+            success: function (data) {
+                if (data != null) {
+                    callback(data);
+                }
+            },
+            error: function (xhr, status, error) {
+                console.error(error);
+            }
+        });
+    };
+</script>

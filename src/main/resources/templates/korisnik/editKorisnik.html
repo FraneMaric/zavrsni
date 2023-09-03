@@ -1,0 +1,61 @@
+<html>
+    <body>
+        <div class="container">
+            <h2>Login</h2>
+            <form action="/korisnik/editPOST" method="post">
+                <div class="form-group">
+                    <label for="username">Username:</label>
+                    <input type="text" id="userName" name="userName" th:placeholder="${korisnik.userName}" onblur="checkDatabase()">
+                    <label id="hidden"></label>
+                </div>
+                <div class="form-group">
+                    <label for="type">Ime:</label>
+                    <input type="text" id="name" name="name" th:placeholder="${korisnik.ime}" >
+                </div>
+                <div class="form-group">
+                    <label for="type">Prezime:</label>
+                    <input type="text" id="surname" name="surname" th:placeholder="${korisnik.prezime}" >
+                </div>
+                <div class="form-group">
+                    <label for="password">Password:</label>
+                    <input type="password" id="password" name="password" th:placeholder="${korisnik.password}" >
+                </div>
+                <div class="form-group">
+                    <label for="type">Type:</label>
+                    <input type="text" id="type" name="type" th:placeholder="${korisnik.type}" >
+                </div>
+                <div class="form-group">
+                    <input type="text" id="id" name="id" th:value="${korisnik.id}" hidden>
+                </div>
+                <div class="form-group">
+                    <input type="text" id="OIB" name="OIB" th:value="${korisnik.oib}" hidden>
+                </div>
+                <div class="form-group">
+                    <button type="submit">Edit</button>
+                </div>
+            </form>
+        </div>
+        </body>
+
+</html>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    function checkDatabase() {
+        var username = document.getElementById("userName").value;
+        $.ajax({
+            url: "/korisnik/usernameCheck",
+            type: "GET",
+            data: { username: username },
+            success: function (data) {
+                if (data == "false") {
+                    document.getElementById("hidden").innerHTML = "Korisničko ime je već zauzeto!";
+                } else {
+                    document.getElementById("hidden").innerHTML = "";
+                }
+            },
+            error: function (xhr, status, error) {
+                console.error(error);
+            }
+        });
+    }
+</script>

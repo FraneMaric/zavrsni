@@ -1,0 +1,29 @@
+body{
+    background-color: lightblue;
+}
+
+.navigationBar ul{
+    display: flex;
+    justify-content: flex-start;
+}
+
+.navigationBar li{
+    margin-right: 10px;
+}
+
+.navbar{
+    list-style: none;
+}
+
+.username{
+    margin-left: auto;
+}
+
+/*   Link za css
+<link rel="stylesheet" type="text/css" href="/lipota.css">    
+ */
+
+
+ /* Link za navigacijsku traku
+ <div th:insert="~{shared/navigationBar}"></div>
+ */

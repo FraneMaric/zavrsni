@@ -1,0 +1,57 @@
+<html>
+
+<body>
+    <div class="container">
+        <h2>Registracija</h2>
+        <div th:insert="~{shared/navigationBar}"></div>
+        <form action="/korisnik/createNew" method="POST">
+            <div class="form-group">
+                <label for="username">Username:</label>
+                <input type="text" id="username" name="username" onblur="checkDatabase()" required>
+                <lable id="hidden"></lable>
+            </div>
+            <div class="form-group">
+                <label for="text">Ime:</label>
+                <input type="text" id="name" name="name" required>
+            </div>
+            <div class="form-group">
+                <label for="text">Prezime:</label>
+                <input type="text" id="surname" name="surname" required>
+            </div>
+            <div class="form-group">
+                <label for="password">Password:</label>
+                <input type="password" id="password" name="password" required>
+            </div>
+            <div class="form-group">
+                <label for="text">OIB:</label>
+                <input type="text" id="OIB" name="OIB" required>
+            </div>
+            <div class="form-group">
+                <button type="submit">Create</button>
+            </div>
+        </form>
+    </div>
+</body>
+
+</html>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    function checkDatabase() {
+        var username = document.getElementById("username").value;
+        $.ajax({
+            url: "/korisnik/usernameCheck",
+            type: "GET",
+            data: { username: username },
+            success: function (data) {
+                if (data == "false") {
+                    document.getElementById("hidden").innerHTML = "Korisničko ime je već zauzeto!";
+                } else {
+                    document.getElementById("hidden").innerHTML = "";
+                }
+            },
+            error: function (xhr, status, error) {
+                console.error(error);
+            }
+        });
+    }
+</script>

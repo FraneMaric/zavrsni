@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="utf-8" />
+    <link rel="stylesheet" type="text/css" href="/lipota.css">
+    <title>Korisnici</title>
+</head>
+
+<body>
+    <div th:insert="~{shared/navigationBar}">
+
+    </div>
+    <div align="center">
+        <h1>POPIS KOLEGIJA</h1>
+        <a href="/korisnik/">Kreiraj novi kolegij</a>
+        <br />
+        <p>User type:</p>
+        <p th:text="${userType}">
+            </th:text>
+        <p><a href="/korisnik/logout">Logout</a></p>
+        <br />
+        <table border="1" cellpadding="10">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Korisničko ime</th>
+                    <th>Šifra</th>
+                    <th>Uredi korisnika</th>
+                    <th>Izbriši korisnika</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="korisnik : ${listKorisnika}">
+                    <td th:text="${korisnik.id}">Product ID</td>
+                    <td th:text="${korisnik.userName}">Naziv</td>
+                    <td th:text="${korisnik.password}">ects</td>
+                    <td><a th:href="@{/korisnik/edit(id=${korisnik.id})}">Uredi</a></td>
+                    <td><a th:href="@{/korisnik/delete(id=${korisnik.id})}">Izbriši</a></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</body>
+
+</html>

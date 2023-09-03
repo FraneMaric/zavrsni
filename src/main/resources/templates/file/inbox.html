@@ -1,0 +1,72 @@
+<html>
+
+<body>
+    <div th:insert="~{shared/navigationBar}"></div>
+    <div>
+        <input type="search" id="searchBar" onchange="search()" />
+    </div>
+    <div align="center">
+        <h1>Inbox</h1>
+        <br />
+        <table border="1" cellpadding="10">
+            <thead>
+                <tr>
+                    <th>Naslov</th>
+                    <th>Poruka</th>
+                    <th>Privitak</th>
+                    <th>Pošiljatelj</th>
+                    <th colspan="2">Akcije</th>
+                </tr>
+            </thead>
+            <tbody id="tableBody">
+                <tr th:each="mail : ${lista}">
+                    <td th:text="${mail.title}"></td>
+                    <td th:text="${mail.message}"></td>
+                    <td th:text="${mail.fileName}"></td>
+                    <td th:text="${mail.sender}"></td>
+                    <td><a th:href="@{/file/download(id=${mail.fileId})}">Otvori datoteku</a></td>
+                    <!-- <td><a th:href="@{/mail/edit(id=${mail.id})}">Uredi</a></td> -->
+                    <td><a th:href="@{/file/delete(fileId=${mail.fileId},messageId=${mail.id})}">Izbriši</a></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</body>
+
+</html>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    function search() {
+        var search = document.getElementById("searchBar").value;
+        $.ajax({
+            url: "/file/searchInbox",
+            type: "POST",
+            data: { search: search },
+            success: function (data) {
+                var list = $('#lista').html(data);
+                console.log(data);
+                $('#tableBody').empty();
+                data-forEach(item => {
+                    var row = '<tr>' +
+                        '<td>' + item.title + '</td>' +
+                        '<td>' + item.message + '</td>' +
+                        '<td>' + item.fileName + '</td>' +
+                        '</tr>';
+                    $('#tableBody').append(row);
+                });
+                // list.forEach(function(item){
+                //     var row ='<tr>'+
+                //         '<td>'+item.title+'<td>'+
+                //         '<td>'+item.message+'<td>'+
+                //         '<td>'+item.fileName+'<td>'+
+                //         '<tr>';
+                //     $('#tableBody').append(row);
+                // })
+            },
+            error: function (xhr, status, error) {
+                console.error(error);
+            }
+        });
+    }
+</script>
