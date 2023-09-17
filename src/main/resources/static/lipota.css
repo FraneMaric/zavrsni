@@ -1,6 +1,6 @@
-body{
+/*body{
     background-color: lightblue;
-}
+}*/
 
 .navigationBar ul{
     display: flex;
@@ -13,11 +13,16 @@ body{
 
 .navbar{
     list-style: none;
+    border-bottom-width:thin;
+    border-bottom-style:solid;
+    padding-bottom:10px;
 }
 
 .username{
     margin-left: auto;
 }
+
+
 
 /*   Link za css
 <link rel="stylesheet" type="text/css" href="/lipota.css">    

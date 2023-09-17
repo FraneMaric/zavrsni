@@ -2,30 +2,29 @@
 
 <body>
     <div th:insert="~{shared/navigationBar}"></div>
-    <div>
-        <input type="search" id="searchBar" onchange="search()" />
-    </div>
     <div align="center">
         <h1>Inbox</h1>
         <br />
+        <div>
+            <input type="search" id="searchBar" onchange="search()"style="margin:15px" />
+        </div>
         <table border="1" cellpadding="10">
             <thead>
                 <tr>
-                    <th>Naslov</th>
+                    <th>Datum</th>
+                    <th>Naziv</th>
                     <th>Poruka</th>
-                    <th>Privitak</th>
-                    <th>Pošiljatelj</th>
+                    <!--<th>Pošiljatelj</th>-->
                     <th colspan="2">Akcije</th>
                 </tr>
             </thead>
             <tbody id="tableBody">
                 <tr th:each="mail : ${lista}">
-                    <td th:text="${mail.title}"></td>
-                    <td th:text="${mail.message}"></td>
-                    <td th:text="${mail.fileName}"></td>
+                    <td th:text="${mail.vrijeme}"></td>
                     <td th:text="${mail.sender}"></td>
-                    <td><a th:href="@{/file/download(id=${mail.fileId})}">Otvori datoteku</a></td>
-                    <!-- <td><a th:href="@{/mail/edit(id=${mail.id})}">Uredi</a></td> -->
+                    <td th:text="${mail.message}"></td>
+                    <!--<td th:text="${mail.fileName}"></td>-->
+                    <td><a th:href="@{/file/download(id=${mail.fileId})}">Otvori</a></td>
                     <td><a th:href="@{/file/delete(fileId=${mail.fileId},messageId=${mail.id})}">Izbriši</a></td>
                 </tr>
             </tbody>

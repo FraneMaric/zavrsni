@@ -1,7 +1,7 @@
 <html>
     <body>
         <div th:insert="~{shared/navigationBar}"></div>
-        <form action="/file/decode" method="post" enctype="multipart/form-data">
+        <form action="/file/uploadPDF" method="post" enctype="multipart/form-data" style="display: flex; flex-direction: column; justify-content: center;align-items: center;">
             <!--<div class="form-group">
                 <label for="recever">Prima:</label>
                 <input type="text" id="recever" name="recever" onblur="checkDatabase()" required>
@@ -15,9 +15,9 @@
                 <label for="message">Poruka:</label>
                 <input type="text" id="message" name="message">
             </div>-->
-            <div class="form-group">
+            <div class="form-group" style="display: flex;text-align: center;justify-content: center;flex-direction: column;">
                 <label for="file">Privitak:</label>
-                <input type="file" name="file"/>         
+                <input type="file" name="file" multiple/>         
             </div>
             <div class="form-group">
                 <button type="submit">Pošalji</button>

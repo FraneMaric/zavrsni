@@ -1,21 +1,27 @@
+<!DOCTYPE html>
 <html>
+    <head>
+        <link rel="stylesheet" type="text/css" href="/test.css">    
+    </head>
     <body>
         <div class="container">
             <div th:insert="~{shared/navigationBar}"></div>
-            <h2>Login</h2>
-            <form action="/korisnik/loginPOST" method="post">
-                <div class="form-group">
-                    <label for="username">Username:</label>
-                    <input type="text" id="username" name="username" required>
-                </div>
-                <div class="form-group">
-                    <label for="password">Password:</label>
-                    <input type="password" id="password" name="password" required>
-                </div>
-                <div class="form-group">
-                    <button type="submit">Login</button>
-                </div>
-            </form>
+            <div class="loginSection" id="loginSection">
+                <h2 style="text-align: center;">Prijava</h2>
+                <form action="/korisnik/loginPOST" method="post">
+                    <div class="form-group" style="display: flex;flex-direction: column;">
+                        <label for="username" style="text-align: center;">Korisničko ime:</label>
+                        <input class="upisLogin" type="text" id="username" name="username" required >
+                    </div>
+                    <div class="form-group"style="display: flex;flex-direction: column;">
+                        <label for="password" style="text-align: center;">Lozinka:</label>
+                        <input type="password" id="password" name="password" required>
+                    </div>
+                    <div class="form-group" style="padding-top: 10px; display: flex;justify-content: center;">
+                        <button type="submit" >Prijava</button>
+                    </div>
+                </form>
+            </div>
         </div>
         </body>
 

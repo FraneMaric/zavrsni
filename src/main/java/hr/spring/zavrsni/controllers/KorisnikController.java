@@ -1,8 +1,10 @@
 package hr.spring.zavrsni.controllers;
 
+import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
+import java.util.Random;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -16,9 +18,12 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import hr.spring.zavrsni.models.FileModel;
 import hr.spring.zavrsni.models.Korisnik;
 import hr.spring.zavrsni.models.Mail;
+import hr.spring.zavrsni.models.PotvrdioModel;
+import hr.spring.zavrsni.services.EmailSendService;
 import hr.spring.zavrsni.services.FileService;
 import hr.spring.zavrsni.services.KorisnikService;
 import hr.spring.zavrsni.services.MailService;
+import hr.spring.zavrsni.services.PotvrdioService;
 import jakarta.servlet.http.HttpSession;
 
 @Controller
@@ -31,6 +36,10 @@ public class KorisnikController {
 	private FileService fileService;
 	@Autowired
 	private MailService mailService;
+	@Autowired
+	private EmailSendService emailService;
+	@Autowired
+	private PotvrdioService potvrdioService;
 
 	public KorisnikController(KorisnikService korisnikService/* , PasswordEncoder encoder */) {
 		this.korisnikService = korisnikService;
@@ -39,7 +48,7 @@ public class KorisnikController {
 
 	@GetMapping("/listAll")
 	public String getAllKorisnik(Model model, HttpSession session) {
-		ArrayList<Korisnik> popisKorisnika = (ArrayList<Korisnik>) korisnikService.getAllKorisnik();
+		ArrayList<Korisnik> popisKorisnika = (ArrayList<Korisnik>) korisnikService.getAllUser();
 		model.addAttribute("listKorisnika", popisKorisnika);
 		model.addAttribute("userType", session.getAttribute("type"));
 		if (session.getAttribute("type").equals("admin")) {
@@ -49,6 +58,20 @@ public class KorisnikController {
 		}
 	}
 
+	@GetMapping("/listAllSender")
+	public String getAllSender(Model model, HttpSession session) {
+		ArrayList<Korisnik> popisKorisnika = (ArrayList<Korisnik>) korisnikService.getAllSender();
+		model.addAttribute("listKorisnika", popisKorisnika);
+		model.addAttribute("userType", session.getAttribute("type"));
+		if (session.getAttribute("type").equals("admin")) {
+			return "korisnik/indexKorisnik";
+		} else {
+			return "testiranje/faliasi";
+		}
+	}
+
+
+
 	@GetMapping("/create")
 	public String createNewKorisnikRedirect() {
 		return "korisnik/createUser";
@@ -56,12 +79,18 @@ public class KorisnikController {
 
 	@PostMapping("/createNew")
 	public String createNewKorisnik(String username,String name, String surname, String password, String OIB) {
+		String poruka="Poštovani,\n molimo stinsnite na link kako bi završili registraciju.\n";
+		Random rnd = new Random();
+		int random=rnd.nextInt(100000);
 		Korisnik korisnik = new Korisnik(username,name,surname, password,OIB);
 		korisnik.setType("user");
+		korisnik.setPotvrdio(false);
 		if (isUsernameFree(username).equals("false")) {
 			return "testiranje/faliasi";
 		} else {
+			confirmOrder(username,random);
 			korisnikService.createKorisnik(korisnik);
+			emailService.sendEmail(username, poruka+"http://localhost:9041/korisnik/confirm?kod="+random, "Registracija korisnika");
 			return "testiranje/dobroe";
 		}
 	}
@@ -75,12 +104,17 @@ public class KorisnikController {
 	public String logIn(String username, String password, HttpSession session, Model model) {
 		Korisnik korisnik = korisnikService.findKorisnikbyUsername(username);
 		if (korisnik != null) {
-			if (korisnik.getPassword().equals(password)) {
-				session.setAttribute("user", korisnik);
-				session.setAttribute("username", korisnik.getUserName());
-				session.setAttribute("type", korisnik.getType());
-				model.addAttribute("user", session.getAttribute("username"));
-				return "redirect:/file/inbox";
+			if(korisnik.isPotvrdio()==true){
+				if (korisnik.getPassword().equals(password)) {
+					session.setAttribute("user", korisnik);
+					session.setAttribute("username", korisnik.getUserName());
+					session.setAttribute("type", korisnik.getType());
+					model.addAttribute("user", session.getAttribute("username"));
+					return "redirect:/file/inbox";
+			}
+			else{
+				return "testiranje/faliasi";
+			}
 			} else {
 				return "testiranje/faliasi";
 			}
@@ -216,6 +250,30 @@ public class KorisnikController {
 		} else {
 			return null;
 		}
+	}
+
+	@GetMapping("/confirm")
+	public String confirm(@RequestParam("kod")int kod){
+		PotvrdioModel model = new PotvrdioModel();
+		model=potvrdioService.findByKod(kod);
+		if(model!=null){
+			potvrdioService.deleteConfirm(model.getId());
+			Korisnik korisnik=korisnikService.findKorisnikbyUsername(model.getUsername());
+			korisnik.setPotvrdio(true);
+			korisnikService.editKorisnik(korisnik);
+			return "testiranje/dobroe";
+		}
+		else{
+			return "testiranje/faliasi";
+		}
+	}
+	
+	public void confirmOrder(String username,int kod){
+
+		PotvrdioModel confirm = new PotvrdioModel();
+		confirm.setUsername(username);
+		confirm.setKod(kod);
+		potvrdioService.saveConfirm(confirm);
 	}
 
 }

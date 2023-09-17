@@ -27,7 +27,14 @@ public class Mail {
     private String message;
     private long fileId;
     private String fileName;
+    private String vrijeme; 
 
+    public String getVrijeme() {
+        return vrijeme;
+    }
+    public void setVrijeme(String vrijeme) {
+        this.vrijeme = vrijeme;
+    }
     public String getFileName() {
         return fileName;
     }

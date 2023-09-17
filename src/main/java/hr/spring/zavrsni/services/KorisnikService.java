@@ -7,6 +7,8 @@ import hr.spring.zavrsni.models.Korisnik;
 @Component
 public interface KorisnikService {
     Iterable<Korisnik> getAllKorisnik();
+    Iterable<Korisnik> getAllSender();
+    Iterable<Korisnik> getAllUser();
 
     public Korisnik createKorisnik(Korisnik korisnik);
     public Korisnik findKorisnikbyUsername(String userName);

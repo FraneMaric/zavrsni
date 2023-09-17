@@ -54,4 +54,14 @@ public class KorisnikServiceImpl implements KorisnikService{
     public void deleteKorisnik(Korisnik korisnik){
         korisnikRepository.delete(korisnik);
     }
+
+    @Override
+    public Iterable<Korisnik> getAllSender(){
+        return korisnikRepository.findAllSender();
+    }
+
+    @Override
+    public Iterable<Korisnik> getAllUser(){
+        return korisnikRepository.findAllUser();
+    }
 }

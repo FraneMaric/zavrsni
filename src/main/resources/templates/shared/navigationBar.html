@@ -25,6 +25,7 @@
                     getType(function (userType) {
                         if (userType == "admin") {
                             $('#navList').append('<li><a href="/korisnik/listAll">Svi korisnici</a></li>');
+                            $('#navList').append('<li><a href="/korisnik/listAllSender">Svi pošiljatelji</a></li>');
                         }
                     });
                     $('#navList').append('<li><a href="/file/inbox">Sandučić</a></li>');
@@ -33,11 +34,11 @@
                             $('#navList').append('<li><a href="/file/send">Pošalji poruku</a></li>');
                         }
                     });
-                    $('#navList').append('<li><a href="/korisnik/logout">Logout</a></li>');
+                    $('#navList').append('<li><a href="/korisnik/logout">Odjava</a></li>');
                     $('#navList').append('<li class="username"><label id="username" class="username"></li>');
                         getUsername();
                 } else {
-                    $('#navList').append('<li><a href="/korisnik/login">Login</a></li>');
+                    $('#navList').append('<li><a href="/korisnik/login">Prijava</a></li>');
                     $('#navList').append('<li><a href="/korisnik/create">Registracija</a></li>');
                 }
             },

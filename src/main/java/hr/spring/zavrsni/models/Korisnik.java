@@ -50,7 +50,15 @@ public class Korisnik {
     private String ime;
     
     private String prezime;
-    
+
+    private boolean potvrdio;
+
+    public boolean isPotvrdio() {
+        return potvrdio;
+    }
+    public void setPotvrdio(boolean potvrdio) {
+        this.potvrdio = potvrdio;
+    }
     public String getOib() {
         return oib;
     }

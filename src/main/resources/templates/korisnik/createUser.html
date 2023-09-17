@@ -1,35 +1,40 @@
 <html>
-
+<head>
+    <link rel="stylesheet" type="text/css" href="/test.css">
+</head>
 <body>
     <div class="container">
-        <h2>Registracija</h2>
         <div th:insert="~{shared/navigationBar}"></div>
-        <form action="/korisnik/createNew" method="POST">
-            <div class="form-group">
-                <label for="username">Username:</label>
-                <input type="text" id="username" name="username" onblur="checkDatabase()" required>
-                <lable id="hidden"></lable>
-            </div>
-            <div class="form-group">
-                <label for="text">Ime:</label>
-                <input type="text" id="name" name="name" required>
-            </div>
-            <div class="form-group">
-                <label for="text">Prezime:</label>
-                <input type="text" id="surname" name="surname" required>
-            </div>
-            <div class="form-group">
-                <label for="password">Password:</label>
-                <input type="password" id="password" name="password" required>
-            </div>
-            <div class="form-group">
-                <label for="text">OIB:</label>
-                <input type="text" id="OIB" name="OIB" required>
-            </div>
-            <div class="form-group">
-                <button type="submit">Create</button>
-            </div>
-        </form>
+        <div class="form-group" style="display: flex;flex-direction: column; justify-content: center;"></div>
+        <h2 style="text-align: center;">Registracija</h2>
+        <div style="display: flex;justify-content: center;">
+            <form action="/korisnik/createNew" method="POST">
+                <div class="form-group" style="display: flex;flex-direction: column;">
+                    <label for="username" style="text-align: center;">Username:</label>
+                    <input type="email" id="username" name="username" onblur="checkDatabase()" required>
+                    <lable id="hidden"></lable>
+                </div>
+                <div class="form-group"style="display: flex;flex-direction: column;">
+                    <label for="text"style="text-align: center;">Ime:</label>
+                    <input type="text" id="name" name="name" required>
+                </div>
+                <div class="form-group"style="display: flex;flex-direction: column;">
+                    <label for="text"style="text-align: center;">Prezime:</label>
+                    <input type="text" id="surname" name="surname" required>
+                </div>
+                <div class="form-group"style="display: flex;flex-direction: column;">
+                    <label for="password"style="text-align: center;">Password:</label>
+                    <input type="password" id="password" name="password" required>
+                </div>
+                <div class="form-group"style="display: flex;flex-direction: column;">
+                    <label for="text"style="text-align: center;">OIB:</label>
+                    <input type="text" id="OIB" name="OIB" required>
+                </div>
+                <div class="form-group"style="padding-top: 10px; display: flex;justify-content: center;">
+                    <button type="submit" id="createButton">Create</button>
+                </div>
+            </form>
+        </div>
     </div>
 </body>
 
@@ -45,6 +50,7 @@
             success: function (data) {
                 if (data == "false") {
                     document.getElementById("hidden").innerHTML = "Korisničko ime je već zauzeto!";
+                    document.getElementById("createButton").style.visibility="hidden";
                 } else {
                     document.getElementById("hidden").innerHTML = "";
                 }

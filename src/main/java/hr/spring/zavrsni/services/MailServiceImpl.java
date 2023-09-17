@@ -21,6 +21,10 @@ public class MailServiceImpl implements MailService {
         return mailRepository.save(mail);
     }
 
+    public Mail findById(Long id){
+        return mailRepository.findById(id);
+    }
+
     public List<Mail> findAllByRecever(String username){
         return mailRepository.findAllByRecever(username);
     }

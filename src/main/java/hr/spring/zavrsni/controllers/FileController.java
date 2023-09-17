@@ -1,9 +1,15 @@
 package hr.spring.zavrsni.controllers;
 
+import java.util.List;
+import java.util.Map;
+import java.util.Random;
+
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import org.apache.pdfbox.Loader;
 import org.apache.pdfbox.pdmodel.PDDocument;
@@ -24,8 +30,10 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.google.zxing.BinaryBitmap;
 import com.google.zxing.ChecksumException;
+import com.google.zxing.DecodeHintType;
 import com.google.zxing.FormatException;
 import com.google.zxing.LuminanceSource;
+import com.google.zxing.MultiFormatReader;
 import com.google.zxing.NotFoundException;
 import com.google.zxing.Result;
 import com.google.zxing.client.j2se.BufferedImageLuminanceSource;
@@ -120,12 +128,17 @@ public class FileController {
         // String contentType = "application/octet-stream";
         // return
         // ResponseEntity.ok().contentType(MediaType.parseMediaType(contentType)).body(filResource);
-        return ResponseEntity.ok().contentType(MediaType.IMAGE_GIF).body(filResource);
+        return ResponseEntity.ok().contentType(MediaType.APPLICATION_PDF).body(filResource);
     }
 
     @GetMapping("/delete")
     public String delete(@RequestParam("fileId") long fileId, @RequestParam("messageId") long messageId) {
         // fileService.delete(id);
+        Mail mail= mailService.findById(messageId);
+        FileModel fileModel = fileService.findById(mail.getFileId());
+        File file = new File(fileModel.getFilePath());
+        file.delete();
+        fileService.delete(fileModel.getId());
         mailService.delete(messageId);
         return "redirect:/file/inbox";
     }
@@ -200,15 +213,17 @@ public class FileController {
 
 
     @PostMapping("/decode")
-    public String decodePdf417(@RequestParam("file") MultipartFile file,HttpSession session) {
+    public String decodePdf417(@RequestParam("file") List<MultipartFile> files,HttpSession session) {
         try {
+            for (MultipartFile file : files) {
+                
+            
             byte[] imageBytes = file.getBytes();
             String decodedText = PDF417.readPdf417(imageBytes);
             //return ResponseEntity.ok(decodedText);
             
 
             String newPath = "C:\\Faks\\Zavrsni\\zavrsni\\Files\\pdf\\" + file.getOriginalFilename();
-            QRCodeReader reader = new QRCodeReader();
             
             File newSavedFile = new File(newPath);
             file.transferTo(newSavedFile);
@@ -219,21 +234,98 @@ public class FileController {
             model.setType(".git");
             model.setSender(session.getAttribute("username").toString());
             String[] recever =decodedText.split(";");
-            model.setRecever(recever[0]);
+            model.setRecever(recever[3]);
             fileService.saveFile(model);
-            mail.setSender(session.getAttribute("username").toString());
-            mail.setRecever(recever[0]);
+            //mail.setSender(session.getAttribute("username").toString());
+            mail.setSender(recever[7]);
+            mail.setRecever(recever[3]);
+            mail.setVrijeme(LocalDate.now().toString());
             //mail.setTitle(title);
-            //mail.setMessage(message);
+            mail.setMessage(recever[14]);
             mail.setFileId(model.getId());
             mail.setFileName(model.getFileName());
             mailService.saveMail(mail);
+            }
             return "redirect:/file/inbox";
         } catch (IOException | NotFoundException e) {
             throw new RuntimeException(e);
         }
     }
     
+
+
+    @PostMapping("/uploadPDF")
+    public String uploadFile(@RequestParam("file") List<MultipartFile> files,HttpSession session) {
+        try {
+            for (MultipartFile file : files) {
+                
+            // Save the uploaded file
+            byte[] pdfBytes = file.getBytes();
+            
+            // Process the PDF file to find and read PDF417 barcode
+            String barcodeData = processPdf(pdfBytes);
+            Random rnd=new Random();
+            String newPath = "C:\\Faks\\Zavrsni\\zavrsni\\Files\\pdf\\"+ rnd.nextInt(1000000)+ file.getOriginalFilename();
+            
+            File newSavedFile = new File(newPath);
+            file.transferTo(newSavedFile);
+            FileModel model = new FileModel();
+            Mail mail = new Mail();
+            model.setFileName(file.getOriginalFilename());
+            model.setFilePath(newPath);
+            model.setType(".pdf");
+            model.setSender(session.getAttribute("username").toString());
+            String[] recever =barcodeData.split(";");
+            model.setRecever(recever[3]);
+            fileService.saveFile(model);
+            //mail.setSender(session.getAttribute("username").toString());
+            mail.setSender(recever[7]);
+            mail.setRecever(recever[3]);
+            mail.setVrijeme(LocalDate.now().toString());
+            //mail.setTitle(title);
+            mail.setMessage(recever[14]);
+            mail.setFileId(model.getId());
+            mail.setFileName(model.getFileName());
+            mailService.saveMail(mail);
+            }
+            return "redirect:/file/inbox";
+        }
+        catch (IOException | NotFoundException e) {
+            throw new RuntimeException(e);
+        }
+        
+    }
+
+    private String processPdf(byte[] pdfBytes) throws IOException, NotFoundException {
+        // Load the PDF document
+        PDDocument document = Loader.loadPDF(pdfBytes);
+        
+        // Convert the first page of the PDF to an image
+        PDFRenderer pdfRenderer = new PDFRenderer(document);
+        BufferedImage image = pdfRenderer.renderImage(0);
+
+        // Use ZXing to decode PDF417 barcode
+        MultiFormatReader reader = new MultiFormatReader();
+        BinaryBitmap binaryBitmap = new BinaryBitmap(
+            new HybridBinarizer(
+                new BufferedImageLuminanceSource(image)
+            )
+        );
+
+        // Set up barcode hints (optional)
+        Map<DecodeHintType, Object> hints = new HashMap<>();
+        hints.put(DecodeHintType.TRY_HARDER, Boolean.TRUE);
+
+        Result result = reader.decode(binaryBitmap, hints);
+        
+        // Get the decoded barcode data
+        String barcodeData = result.getText();
+        
+        // Close the PDF document
+        document.close();
+
+        return barcodeData;
+    }
 
     
 

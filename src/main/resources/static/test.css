@@ -1,0 +1,43 @@
+.loginSection{
+    
+    /*margin-left:40%;
+    margin-right:50%;*/
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    align-items: center;
+}
+
+.form-group{
+    padding-top: 10px; 
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.navigationBar ul{
+    display: flex;
+    justify-content: flex-start;
+}
+
+.navigationBar li{
+    margin-right: 10px;
+}
+
+.navbar{
+    list-style: none;
+    border-bottom-width:thin;
+    border-bottom-style:solid;
+    padding-bottom:10px;
+}
+
+.username{
+    margin-left: auto;
+}
+
+
+
+
+/*
+<link rel="stylesheet" type="text/css" href="/test.css">
+*/

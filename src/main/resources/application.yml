@@ -1,10 +1,24 @@
 spring:
     mvc.view.suffix: .htmlsec
     datasource:
-        url: "jdbc:mysql://localhost:3306/zavrsni?autoReconnect=true&useSSL=false&zeroDateTimeBehavior=convertToNull&useUnicode=yes&characterEncoding=UTF-8&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=Europe/Berlin"
-        username: root
-        password: 
-    jpa.hibernate.ddl-auto: update
+        url: "jdbc:postgresql://localhost:5432/postgres"
+        username: postgres
+        password: admin123
+    jpa:
+        hibernate.ddl-auto: update
+        #properties.hibernate.format_sql: true
+        #properties.hibernate.dialect: "org.hibernate.dialect.PostgreSQL81Dialect"
+    
+    mail:
+        host: smtp.googlemail.com
+        port: 587
+        username: zavrsni257@gmail.com
+        password: rcnorsbaclaiiqxo
+        properties:
+            mail:
+                smtp:
+                    auth: true
+                    starttls.enable: true
 
     servlet:
         multipart.max-file-size: 1000MB
@@ -15,45 +29,6 @@ spring:
             host: localhost
             port: 6379
 
-    
 
-# jwt:
-#     public.key: >-
-#         MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEApM29YrFhZkroEQzPveXR
-#         jr2xX5HoxEHLm7jQLT70q5ky+vCOyiAuaJRqD3Q1UpWvPQFGunFxoFfJP/Wrekbt
-#         SpfBeVYCTk2o0McT+bYEdev55MJe9xvOlo7iQ5QRRfuhGIX11xlHpDBIZ9EHWI0Z
-#         bv5Z09z7aOJ0AvdSDeXFoWzeC485m/LWMPfYly6z4npmCpyZostbUPmS5oHmycjg
-#         y79VrD4wZ09wQwx5E579PLvWmhe9yJxoJtGKzQNPRAxY8O51mpDfEadHXvQSBWlP
-#         kXgq18BQIbW0UsdlpYRmrCSgXFn2C5CZPQbC3AdLVc6rNrzDD9cV7t7/VeG5s2Wp
-#         RwIDAQAB
-
-
-
-#     private.key: >-
-#         MIIEowIBAAKCAQEApM29YrFhZkroEQzPveXRjr2xX5HoxEHLm7jQLT70q5ky+vCO
-#         yiAuaJRqD3Q1UpWvPQFGunFxoFfJP/WrekbtSpfBeVYCTk2o0McT+bYEdev55MJe
-#         9xvOlo7iQ5QRRfuhGIX11xlHpDBIZ9EHWI0Zbv5Z09z7aOJ0AvdSDeXFoWzeC485
-#         m/LWMPfYly6z4npmCpyZostbUPmS5oHmycjgy79VrD4wZ09wQwx5E579PLvWmhe9
-#         yJxoJtGKzQNPRAxY8O51mpDfEadHXvQSBWlPkXgq18BQIbW0UsdlpYRmrCSgXFn2
-#         C5CZPQbC3AdLVc6rNrzDD9cV7t7/VeG5s2WpRwIDAQABAoIBAHiLBDtsAxIPOC9A
-#         b7M2plEB7vs4fkkO1x7Pz3VI1y2soN1rlwXBBDD6XZlwJpCBa+vzQwicccAWdd2S
-#         lBqcRnSJC7r0bjtYEmKjOrkrqZeXQvFQOqYEcNcvK9DCPOAzbWHCmk767qvppQxK
-#         mFTs3+2PnaSZvkq5WKHSxPHlXujyy+jI2+FiEKYu03LebCZQpNySto/NP6KWmEwJ
-#         GbFFoRYrJY23zrfCHAuFEOEPPmuBHNdffq4LhwPQCtBvbvOoCsqnx23SlvOSBh2l
-#         V/U7Cr8FY8sXtlSfJyR2a6Z98rHSs97EunS/9/wEPKw1u4vjTvLZJ/hE3eyqq8QF
-#         lJ2xRAECgYEA0hWQ+1zLnaT/kyWZYH8vwtv57O01xH+jNaA+Ato1Ef8DKcaq34+m
-#         vMj3gA0IYpudESH0ytq1tkSsl9HCA7PY7M3p1tR0e3o2E9sCcBU9Gdi7o4aipau/
-#         zOxkmyxKGEcaoRZhmmAH3Y4zAbfhh2pNk1UoV36SYpfpCa8wlbCb5h8CgYEAyNKt
-#         jlduYznxeDC4BcbE8C9dMHSfwqctuAFjIivoIbS+ljs1LARX7uAZmywDd3QBrLrO
-#         EUa2OB/ikF9uEqOPXzhH2ye5PqU8mXSsTg7VDcOWZ3FEn0lpywMb9Fv0Gt8HZ0E5
-#         gU066HqNugvz/ltyQMcMPrM1M5Z81fUKN03zR9kCgYBwLenr/yIO/NMoDLS4zVGA
-#         mJv9ArFqSsmo0fcq6L/b6zMSNK57kCZ1uk5Gxy7KENQvGNWxGFZdjJAoxW33MirM
-#         UCvkdi/420pTEehcV0r4KT4Q1My28F4Lm9Mg9OZfzmAO0netykeI6+yap0i7WW0x
-#         FhDjn4elM/7RGAY2eEbW+wKBgQCmCABziXd7VAF+lBDgvbg+t3n9QL6A6UTUN1ll
-#         fBV8IHndrO/GB4VHukGRV+85yFBGJV+PSv4GIt5m7G8Nu+oiGF7YItx1nZkfaiW2
-#         l26v5X+o4C2S39g2fsiS259SxAfT50oKy/YjFIeuRImiRqqMQcSu5ezbTNTC88dR
-#         eAHl6QKBgHA7fyaRmoy3GLZv9lE4bzxQ1j9T+lU9dorOSdugVeF1BkJprwZF101P
-#         ++7IKbfHKhs//gb+yVljdx3fBDTdQk8yFzCX94vOQycllc0D60JigIjtS9JOHUMt
-#         SZjl8ABJLE33mXInUlI+yuJ3QYnjJTuJpvwBt+i3YGk5y31e4xr/
         
 server.port: 9041
