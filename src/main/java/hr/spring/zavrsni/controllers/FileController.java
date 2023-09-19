@@ -275,7 +275,7 @@ public class FileController {
             
             File newSavedFile = new File(newPath);
             file.transferTo(newSavedFile);
-            s3Service.saveFile(file);
+            //s3Service.saveFile(file);
             FileModel model = new FileModel();
             Mail mail = new Mail();
             model.setFileName(file.getOriginalFilename());
