@@ -35,3 +35,17 @@ spring:
 
         
 server.port: 9041
+
+cloud:
+    aws:
+        credentials:
+            access-key: AKIASPOEHCP2XZBGASFJ
+            secret-key: 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
+        region:
+            static: eu-north-1
+        stack:
+            auto: false
+
+application:
+    bucket:
+        name: zavrsni

@@ -44,6 +44,7 @@ import hr.spring.zavrsni.models.FileModel;
 import hr.spring.zavrsni.models.Mail;
 import hr.spring.zavrsni.services.FileService;
 import hr.spring.zavrsni.services.MailService;
+import hr.spring.zavrsni.services.StorageService;
 import hr.spring.zavrsni.utility.PDF417;
 import hr.spring.zavrsni.utility.QRCodeScanner;
 import jakarta.servlet.http.HttpSession;
@@ -51,6 +52,9 @@ import jakarta.servlet.http.HttpSession;
 @Controller
 @RequestMapping(path = "/file")
 public class FileController {
+
+    @Autowired
+    private StorageService s3Service;
 
     @Autowired
     private FileService fileService;
@@ -122,13 +126,14 @@ public class FileController {
     }
 
     @GetMapping("/download")
-    public ResponseEntity<Resource> download(@RequestParam("id") Long id) {
+    public byte[] download(@RequestParam("id") Long id) {
         FileModel file = fileService.findById(id);
-        Resource filResource = new FileSystemResource(file.getFilePath());
+        //Resource filResource = new FileSystemResource(file.getFilePath());
         // String contentType = "application/octet-stream";
         // return
         // ResponseEntity.ok().contentType(MediaType.parseMediaType(contentType)).body(filResource);
-        return ResponseEntity.ok().contentType(MediaType.APPLICATION_PDF).body(filResource);
+        return s3Service.download(file.getFileName());
+        //return ResponseEntity.ok().contentType(MediaType.APPLICATION_PDF).body(filResource);
     }
 
     @GetMapping("/delete")
@@ -265,10 +270,12 @@ public class FileController {
             // Process the PDF file to find and read PDF417 barcode
             String barcodeData = processPdf(pdfBytes);
             Random rnd=new Random();
+            //String newPath = "C:\\Faks\\Zavrsni\\zavrsni\\Files\\pdf\\"+ rnd.nextInt(1000000)+ file.getOriginalFilename();
             String newPath = "C:\\Faks\\Zavrsni\\zavrsni\\Files\\pdf\\"+ rnd.nextInt(1000000)+ file.getOriginalFilename();
             
             File newSavedFile = new File(newPath);
             file.transferTo(newSavedFile);
+            s3Service.saveFile(file);
             FileModel model = new FileModel();
             Mail mail = new Mail();
             model.setFileName(file.getOriginalFilename());
