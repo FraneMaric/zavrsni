@@ -89,7 +89,7 @@ public class KorisnikController {
 		} else {
 			confirmOrder(username,random);
 			korisnikService.createKorisnik(korisnik);
-			emailService.sendEmail(username, poruka+"https://zavrsni-3581909fa845.herokuapp.com/korisnik/confirm?kod="+random, "Registracija korisnika");
+			emailService.sendEmail(username, poruka+"https://zavrsni-8d871b94b11f.herokuapp.com/korisnik/confirm?kod="+random, "Registracija korisnika");
 			return "testiranje/dobroe";
 		}
 	}
