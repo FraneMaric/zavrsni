@@ -11,4 +11,5 @@ public interface MailRepository extends JpaRepository<Mail,Mail> {
     List<Mail> findAllByRecever(String username);
     List<Mail> findAllBySender(String username);
     Mail findById(long id);
+    // List<Mail> findMail(String searchString);
 }

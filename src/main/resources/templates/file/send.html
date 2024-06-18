@@ -1,29 +1,27 @@
 <html>
-    <body>
-        <div th:insert="~{shared/navigationBar}"></div>
-        <form action="/file/uploadPDF" method="post" enctype="multipart/form-data" style="display: flex; flex-direction: column; justify-content: center;align-items: center;">
-            <!--<div class="form-group">
-                <label for="recever">Prima:</label>
-                <input type="text" id="recever" name="recever" onblur="checkDatabase()" required>
-                <label id="hidden"></label>
-            </div>
+
+<head>
+    <link rel="stylesheet" type="text/css" href="/file.css">
+    <!-- <link rel="stylesheet" type="text/css" href="/src/main/resources/static/file.css"> -->
+</head>
+
+<body>
+    <div th:insert="~{shared/navigationBar}"></div>
+    <div class="topHalf">
+        <h1 class="title">Pošalji poruku</h1>
+    </div>
+    <div class="sendMessage">
+        <h2>Privitak</h2>
+        <form action="/file/uploadPDF" method="post" enctype="multipart/form-data">
             <div class="form-group">
-                <label for="title">Predmet:</label>
-                <input type="text" id="title" name="title">
-            </div>
-            <div class="form-group">
-                <label for="message">Poruka:</label>
-                <input type="text" id="message" name="message">
-            </div>-->
-            <div class="form-group" style="display: flex;text-align: center;justify-content: center;flex-direction: column;">
-                <label for="file">Privitak:</label>
-                <input type="file" name="file" multiple/>         
-            </div>
-            <div class="form-group">
-                <button type="submit">Pošalji</button>
+                <svg class="attachment" xmlns="http://www.w3.org/2000/svg" height="30" viewBox="0 0 448 512"><!--!Font Awesome Free 6.5.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.--><path fill="#ffffff" d="M364.2 83.8c-24.4-24.4-64-24.4-88.4 0l-184 184c-42.1 42.1-42.1 110.3 0 152.4s110.3 42.1 152.4 0l152-152c10.9-10.9 28.7-10.9 39.6 0s10.9 28.7 0 39.6l-152 152c-64 64-167.6 64-231.6 0s-64-167.6 0-231.6l184-184c46.3-46.3 121.3-46.3 167.6 0s46.3 121.3 0 167.6l-176 176c-28.6 28.6-75 28.6-103.6 0s-28.6-75 0-103.6l144-144c10.9-10.9 28.7-10.9 39.6 0s10.9 28.7 0 39.6l-144 144c-6.7 6.7-6.7 17.7 0 24.4s17.7 6.7 24.4 0l176-176c24.4-24.4 24.4-64 0-88.4z"/></svg>
+                <input class="filePicker" type="file" name="file" id="file" multiple />
             </div>
         </form>
-    </body>
+        <input class="submitButton" type="button" onclick="send()" value="Pošalji"></input>
+    </div>
+</body>
+
 </html>
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
@@ -44,5 +42,30 @@
                 console.error(error);
             }
         });
+    }
+
+
+    function send() {
+        var formdata = new FormData();
+        var files = document.getElementById("file").files;
+        for (var i = 0; i < files.length; i++) {
+            formdata.append('files', files[i]);
+        }
+        $.ajax({
+            url: "/file/uploadPDF",
+            type: "POST",
+            data: formdata,
+            //dataType: string,
+            //data: { files: files },
+            processData: false,
+            contentType: false,
+            success: function (data) {
+                window.alert("Success: " + JSON.stringify(data));
+            },
+            error: function (jqXHR, textStatus, errorThrown) {
+                var errorMsg = "Request failed: " + textStatus + "\nError: " + errorThrown + "\nResponse: " + JSON.stringify(jqXHR.responseJSON || jqXHR.responseText);
+                window.alert(errorMsg);
+            }
+        })
     }
 </script>

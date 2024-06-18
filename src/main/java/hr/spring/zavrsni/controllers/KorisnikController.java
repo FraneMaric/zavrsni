@@ -1,6 +1,5 @@
 package hr.spring.zavrsni.controllers;
 
-import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
@@ -111,16 +110,40 @@ public class KorisnikController {
 					session.setAttribute("type", korisnik.getType());
 					model.addAttribute("user", session.getAttribute("username"));
 					return "redirect:/file/inbox";
-			}
-			else{
-				return "testiranje/faliasi";
-			}
+				} else {
+					model.addAttribute("error", "Kriva šifra. Molimo pokušajte ponovo.");
+				}
 			} else {
-				return "testiranje/faliasi";
+				model.addAttribute("error", "Račun nije potvrđen.");
 			}
 		} else {
-			return "testiranje/faliasi";
+			model.addAttribute("error", "Korisnik nije pronađen.");
 		}
+		return "korisnik/login";
+	}
+
+	@GetMapping("/loginCheck")
+	@ResponseBody
+	public String loginCheck(String username, String password, HttpSession session, Model model) {
+		Korisnik korisnik = korisnikService.findKorisnikbyUsername(username);
+		if (korisnik != null) {
+			if(korisnik.isPotvrdio()==true){
+				if (korisnik.getPassword().equals(password)) {
+					session.setAttribute("user", korisnik);
+					session.setAttribute("username", korisnik.getUserName());
+					session.setAttribute("type", korisnik.getType());
+					model.addAttribute("user", session.getAttribute("username"));
+					return "true";
+				} else {
+					model.addAttribute("error", "Kriva šifra. Molimo pokušajte ponovo.");
+				}
+			} else {
+				model.addAttribute("error", "Račun nije potvrđen.");
+			}
+		} else {
+			model.addAttribute("error", "Korisnik nije pronađen.");
+		}
+		return "false";
 	}
 
 	@GetMapping("/logout")

@@ -10,15 +10,12 @@ import java.io.IOException;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 
 import org.apache.pdfbox.Loader;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.rendering.PDFRenderer;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.io.FileSystemResource;
-import org.springframework.core.io.Resource;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -68,49 +65,54 @@ public class FileController {
         return "/file/addFile";
     }
 
-    /*@PostMapping("/upload")
-    public String uploadFile(@RequestParam("file") MultipartFile file, HttpSession session)
-            throws ChecksumException, FormatException {
-        try {
-            String filePath = "C:\\Faks\\Zavrsni\\zavrsni\\Files\\" + file.getOriginalFilename();
-            File savedFile = new File(filePath);
-            // file.transferTo(savedFile);
-
-            String ext = getFileExtension(file);
-
-            if (ext.equals("pdf")) {
-                PDDocument document = Loader.loadPDF(savedFile);
-                PDFRenderer pdfRenderer = new PDFRenderer(document);
-                BufferedImage image = pdfRenderer.renderImage(0, 2.0f);
-                LuminanceSource source = new BufferedImageLuminanceSource(image);
-                BinaryBitmap bitmap = new BinaryBitmap(new HybridBinarizer(source));
-
-                String newPath = "C:\\Faks\\Zavrsni\\zavrsni\\Files\\pdf\\" + file.getOriginalFilename();
-                QRCodeReader reader = new QRCodeReader();
-                Result result = reader.decode(bitmap);
-                File newSavedFile = new File(newPath);
-                file.transferTo(newSavedFile);
-                FileModel model = new FileModel();
-                model.setFileName(file.getOriginalFilename());
-                model.setFilePath(newPath);
-                model.setType(result.toString());
-                model.setSender(session.getAttribute("username").toString());
-                fileService.saveFile(model);
-                return "testiranje/dobroe";
-
-            } else if (ext.equals("image")) {
-                // Read QR code
-                QRCodeScanner qrCodeScanner = new QRCodeScanner();
-                String qrCodeContent = qrCodeScanner.readQRCode(savedFile);
-                filePath += qrCodeContent + "\\" + file.getOriginalFilename();
-                file.transferTo(savedFile);
-            }
-
-            return "Uspilo je";
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-    }*/
+    /*
+     * @PostMapping("/upload")
+     * public String uploadFile(@RequestParam("file") MultipartFile file,
+     * HttpSession session)
+     * throws ChecksumException, FormatException {
+     * try {
+     * String filePath = "C:\\Faks\\Zavrsni\\zavrsni\\Files\\" +
+     * file.getOriginalFilename();
+     * File savedFile = new File(filePath);
+     * // file.transferTo(savedFile);
+     * 
+     * String ext = getFileExtension(file);
+     * 
+     * if (ext.equals("pdf")) {
+     * PDDocument document = Loader.loadPDF(savedFile);
+     * PDFRenderer pdfRenderer = new PDFRenderer(document);
+     * BufferedImage image = pdfRenderer.renderImage(0, 2.0f);
+     * LuminanceSource source = new BufferedImageLuminanceSource(image);
+     * BinaryBitmap bitmap = new BinaryBitmap(new HybridBinarizer(source));
+     * 
+     * String newPath = "C:\\Faks\\Zavrsni\\zavrsni\\Files\\pdf\\" +
+     * file.getOriginalFilename();
+     * QRCodeReader reader = new QRCodeReader();
+     * Result result = reader.decode(bitmap);
+     * File newSavedFile = new File(newPath);
+     * file.transferTo(newSavedFile);
+     * FileModel model = new FileModel();
+     * model.setFileName(file.getOriginalFilename());
+     * model.setFilePath(newPath);
+     * model.setType(result.toString());
+     * model.setSender(session.getAttribute("username").toString());
+     * fileService.saveFile(model);
+     * return "testiranje/dobroe";
+     * 
+     * } else if (ext.equals("image")) {
+     * // Read QR code
+     * QRCodeScanner qrCodeScanner = new QRCodeScanner();
+     * String qrCodeContent = qrCodeScanner.readQRCode(savedFile);
+     * filePath += qrCodeContent + "\\" + file.getOriginalFilename();
+     * file.transferTo(savedFile);
+     * }
+     * 
+     * return "Uspilo je";
+     * } catch (Exception e) {
+     * throw new RuntimeException(e);
+     * }
+     * }
+     */
 
     private String getFileExtension(MultipartFile file) {
         String originalFileName = file.getOriginalFilename();
@@ -128,18 +130,19 @@ public class FileController {
     @GetMapping("/download")
     public byte[] download(@RequestParam("id") Long id) {
         FileModel file = fileService.findById(id);
-        //Resource filResource = new FileSystemResource(file.getFilePath());
+        // Resource filResource = new FileSystemResource(file.getFilePath());
         // String contentType = "application/octet-stream";
         // return
         // ResponseEntity.ok().contentType(MediaType.parseMediaType(contentType)).body(filResource);
         return s3Service.download(file.getFileName());
-        //return ResponseEntity.ok().contentType(MediaType.APPLICATION_PDF).body(filResource);
+        // return
+        // ResponseEntity.ok().contentType(MediaType.APPLICATION_PDF).body(filResource);
     }
 
     @GetMapping("/delete")
     public String delete(@RequestParam("fileId") long fileId, @RequestParam("messageId") long messageId) {
         // fileService.delete(id);
-        Mail mail= mailService.findById(messageId);
+        Mail mail = mailService.findById(messageId);
         FileModel fileModel = fileService.findById(mail.getFileId());
         File file = new File(fileModel.getFilePath());
         file.delete();
@@ -191,12 +194,12 @@ public class FileController {
         } else if (ext.equals("png")) {
             String filePath = "C:\\Faks\\Zavrsni\\zavrsni\\Files\\image\\" + file.getOriginalFilename();
             File savedFile = new File(filePath);
-                // Read QR code
-                QRCodeScanner qrCodeScanner = new QRCodeScanner();
-                String qrCodeContent = qrCodeScanner.readQRCode(savedFile);
-                filePath += qrCodeContent + "\\" + file.getOriginalFilename();
-                file.transferTo(savedFile);
-              return "redirect:/file/inbox";
+            // Read QR code
+            QRCodeScanner qrCodeScanner = new QRCodeScanner();
+            String qrCodeContent = qrCodeScanner.readQRCode(savedFile);
+            filePath += qrCodeContent + "\\" + file.getOriginalFilename();
+            file.transferTo(savedFile);
+            return "redirect:/file/inbox";
         }
 
         return "a";
@@ -204,109 +207,120 @@ public class FileController {
 
     @PostMapping("/searchInbox")
     @ResponseBody
-    public ArrayList<Mail> searchInbox(@RequestParam("search")String search, HttpSession session){
+    public ArrayList<Mail> searchInbox(@RequestParam("search") String search, HttpSession session) {
         ArrayList<Mail> listaMailova = (ArrayList<Mail>) mailService
-                .findAllByRecever(session.getAttribute("username").toString());
-        for(Mail mail:listaMailova){
-            if(!mail.getMessage().contains(search)){
-                listaMailova.remove(mail);
+                .findAllBySender(session.getAttribute("username").toString());
+                // .findMail(session.getAttribute("username").toString());
+        
+        // Create an iterator to iterate over the ArrayList
+        Iterator<Mail> iterator = listaMailova.iterator();
+        while (iterator.hasNext()) {
+            Mail mail = iterator.next();
+            if (!mail.getMessage().contains(search)) {
+                // Remove the current element using the iterator's remove() method
+                iterator.remove();
             }
         }
         return listaMailova;
     }
-
-
+    
 
     @PostMapping("/decode")
-    public String decodePdf417(@RequestParam("file") List<MultipartFile> files,HttpSession session) {
+    public String decodePdf417(@RequestParam("file") List<MultipartFile> files, HttpSession session) {
         try {
             for (MultipartFile file : files) {
-                
-            
-            byte[] imageBytes = file.getBytes();
-            String decodedText = PDF417.readPdf417(imageBytes);
-            //return ResponseEntity.ok(decodedText);
-            
 
-            String newPath = "C:\\Faks\\Zavrsni\\zavrsni\\Files\\pdf\\" + file.getOriginalFilename();
-            
-            File newSavedFile = new File(newPath);
-            file.transferTo(newSavedFile);
-            FileModel model = new FileModel();
-            Mail mail = new Mail();
-            model.setFileName(file.getOriginalFilename());
-            model.setFilePath(newPath);
-            model.setType(".git");
-            model.setSender(session.getAttribute("username").toString());
-            String[] recever =decodedText.split(";");
-            model.setRecever(recever[3]);
-            fileService.saveFile(model);
-            //mail.setSender(session.getAttribute("username").toString());
-            mail.setSender(recever[7]);
-            mail.setRecever(recever[3]);
-            mail.setVrijeme(LocalDate.now().toString());
-            //mail.setTitle(title);
-            mail.setMessage(recever[14]);
-            mail.setFileId(model.getId());
-            mail.setFileName(model.getFileName());
-            mailService.saveMail(mail);
+                byte[] imageBytes = file.getBytes();
+                String decodedText = PDF417.readPdf417(imageBytes);
+                // return ResponseEntity.ok(decodedText);
+
+                String newPath = "C:\\Faks\\Zavrsni\\zavrsni\\Files\\pdf\\" + file.getOriginalFilename();
+
+                File newSavedFile = new File(newPath);
+                file.transferTo(newSavedFile);
+                FileModel model = new FileModel();
+                Mail mail = new Mail();
+                model.setFileName(file.getOriginalFilename());
+                model.setFilePath(newPath);
+                model.setType(".git");
+                model.setSender(session.getAttribute("username").toString());
+                String[] recever = decodedText.split(";");
+                model.setRecever(recever[3]);
+                fileService.saveFile(model);
+                // mail.setSender(session.getAttribute("username").toString());
+                mail.setSender(recever[7]);
+                mail.setRecever(recever[3]);
+                mail.setVrijeme(LocalDate.now().toString());
+                // mail.setTitle(title);
+                mail.setMessage(recever[14]);
+                mail.setFileId(model.getId());
+                mail.setFileName(model.getFileName());
+                mailService.saveMail(mail);
             }
             return "redirect:/file/inbox";
         } catch (IOException | NotFoundException e) {
             throw new RuntimeException(e);
         }
     }
-    
-
 
     @PostMapping("/uploadPDF")
-    public String uploadFile(@RequestParam("file") List<MultipartFile> files,HttpSession session) {
-        try {
-            for (MultipartFile file : files) {
-                
-            // Save the uploaded file
-            byte[] pdfBytes = file.getBytes();
-            
-            // Process the PDF file to find and read PDF417 barcode
-            String barcodeData = processPdf(pdfBytes);
-            Random rnd=new Random();
-            //String newPath = "C:\\Faks\\Zavrsni\\zavrsni\\Files\\pdf\\"+ rnd.nextInt(1000000)+ file.getOriginalFilename();
-            String newPath = "C:\\Faks\\Zavrsni\\zavrsni\\Files\\pdf\\"+ rnd.nextInt(1000000)+ file.getOriginalFilename();
-            
-            File newSavedFile = new File(newPath);
-            file.transferTo(newSavedFile);
-            //s3Service.saveFile(file);
-            FileModel model = new FileModel();
-            Mail mail = new Mail();
-            model.setFileName(file.getOriginalFilename());
-            model.setFilePath(newPath);
-            model.setType(".pdf");
-            model.setSender(session.getAttribute("username").toString());
-            String[] recever =barcodeData.split(";");
-            model.setRecever(recever[3]);
-            fileService.saveFile(model);
-            //mail.setSender(session.getAttribute("username").toString());
-            mail.setSender(recever[7]);
-            mail.setRecever(recever[3]);
-            mail.setVrijeme(LocalDate.now().toString());
-            //mail.setTitle(title);
-            mail.setMessage(recever[14]);
-            mail.setFileId(model.getId());
-            mail.setFileName(model.getFileName());
-            mailService.saveMail(mail);
+    public String uploadFile(@RequestParam("files") List<MultipartFile> files, HttpSession session) {
+        List<String> errors=new ArrayList<String>();
+        for (MultipartFile file : files) {
+            try {
+                // Save the uploaded file
+                byte[] pdfBytes = file.getBytes();
+
+                // Process the PDF file to find and read PDF417 barcode
+                String barcodeData = processPdf(pdfBytes);
+                Random rnd = new Random();
+                // String newPath = "C:\\Faks\\Zavrsni\\zavrsni\\Files\\pdf\\"+
+                // rnd.nextInt(1000000)+ file.getOriginalFilename();
+                String newPath = "C:\\Faks\\Zavrsni\\zavrsni\\Files\\pdf\\" + rnd.nextInt(1000000)
+                        + file.getOriginalFilename();
+
+                File newSavedFile = new File(newPath);
+                file.transferTo(newSavedFile);
+                // s3Service.saveFile(file);
+                FileModel model = new FileModel();
+                Mail mail = new Mail();
+                model.setFileName(file.getOriginalFilename());
+                model.setFilePath(newPath);
+                model.setType(".pdf");
+                model.setSender(session.getAttribute("username").toString());
+                String[] recever = barcodeData.split(";");
+                model.setRecever(recever[3]);
+                fileService.saveFile(model);
+                // mail.setSender(session.getAttribute("username").toString());
+                mail.setSender(recever[7]);
+                mail.setRecever(recever[3]);
+                mail.setVrijeme(LocalDate.now().toString());
+                // mail.setTitle(title);
+                mail.setMessage(recever[14]);
+                mail.setFileId(model.getId());
+                mail.setFileName(model.getFileName());
+                mailService.saveMail(mail);
+
+            } catch (Exception e) {
+                errors.add(file.getName());
             }
-            return "redirect:/file/inbox";
         }
-        catch (IOException | NotFoundException e) {
-            throw new RuntimeException(e);
+        for (String name : errors) {
+            System.out.println(name);
         }
-        
+        // System.out.println();
+        //return "redirect:/file/inbox";
+        String end="";
+        for(int i=0;i<errors.size();i++){
+            end+=errors.get(i);
+        }
+        return end;
     }
 
     private String processPdf(byte[] pdfBytes) throws IOException, NotFoundException {
         // Load the PDF document
         PDDocument document = Loader.loadPDF(pdfBytes);
-        
+
         // Convert the first page of the PDF to an image
         PDFRenderer pdfRenderer = new PDFRenderer(document);
         BufferedImage image = pdfRenderer.renderImage(0);
@@ -314,31 +328,22 @@ public class FileController {
         // Use ZXing to decode PDF417 barcode
         MultiFormatReader reader = new MultiFormatReader();
         BinaryBitmap binaryBitmap = new BinaryBitmap(
-            new HybridBinarizer(
-                new BufferedImageLuminanceSource(image)
-            )
-        );
+                new HybridBinarizer(
+                        new BufferedImageLuminanceSource(image)));
 
         // Set up barcode hints (optional)
         Map<DecodeHintType, Object> hints = new HashMap<>();
         hints.put(DecodeHintType.TRY_HARDER, Boolean.TRUE);
 
         Result result = reader.decode(binaryBitmap, hints);
-        
+
         // Get the decoded barcode data
         String barcodeData = result.getText();
-        
+
         // Close the PDF document
         document.close();
 
         return barcodeData;
     }
-
-    
-
-
-
-
-
 
 }

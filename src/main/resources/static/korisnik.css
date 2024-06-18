@@ -1,0 +1,129 @@
+body {
+    background-color: #F6F6F6;
+}
+
+* {
+    font-family: 'Montserrat', sans-serif;
+    color: white;
+}
+
+.loginSection {
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    align-items: center;
+    width: 50%;
+    background-color: #0070D7;
+    border-top-left-radius: 5%;
+    border-bottom-left-radius: 5%;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    padding-top: 10px;
+    justify-content: center;
+    align-items: center;
+}
+
+.loginContainer {
+    display: inline-flex;
+    margin: auto;
+    width: 70%;
+    height: 50%;
+    justify-content: center;
+    position: absolute;
+    top: 25%;
+    left: 15%;
+}
+
+.registrationQuestion {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 50%;
+    background-color: #42A4FF;
+    border-top-right-radius: 5%;
+    border-bottom-right-radius: 5%;
+}
+
+.prijavaText {
+    border-bottom: 2px solid white;
+    padding-bottom: 30px;
+    width: 50%;
+    text-align: center;
+}
+
+
+
+
+.upisLogin {
+    border: 3px solid #D3D3D3;
+    border-radius: 10px 10px 10px 10px;
+    width: 170%;
+    padding: 10%;
+    background-color: #0070D7;
+}
+
+.upisLogin::placeholder {
+    color: #D3D3D3;
+    font-weight: 1000;
+}
+
+.submitButton {
+    width: 195%;
+    background-color: #F6F6F6;
+    border: 3px solid #D3D3D3;
+    border-radius: 10px 10px 10px 10px;
+    padding: 10%;
+    color: #0070d7;
+    font-weight: 1000;
+    font-size: 100%;
+}
+
+a {
+    background-color: #42A4FF;
+    border: 3px solid #f6f6f6;
+    border-radius: 10px 10px 10px 10px;
+    color: #F6F6F6;
+    font-weight: 1000;
+    font-size: 100%;
+    width: 30%;
+    padding: 10px;
+    text-decoration: none;
+    text-align: center;
+}
+
+.registrationContrainer {
+    display: inline-flex;
+    margin: auto;
+    width: 70%;
+    height: 50%;
+    justify-content: center;
+    position: absolute;
+    top: 25%;
+    left: 15%;
+}
+
+.registraionForm {
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    align-items: center;
+    width: 50%;
+    background-color: #0070D7;
+    border-top-right-radius: 5%;
+    border-bottom-right-radius: 5%;
+}
+
+.loginQuestion {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 50%;
+    background-color: #42A4FF;
+    border-top-left-radius: 5%;
+    border-bottom-left-radius: 5%;
+}

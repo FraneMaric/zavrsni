@@ -1,0 +1,195 @@
+body {
+    background-color: #D3D3D3;
+}
+
+* {
+    font-family: 'Montserrat', sans-serif;
+    color: black;
+}
+
+.inbox {
+    position: absolute;
+    width: 90%;
+    left: 5%;
+    justify-content: center;
+    align-items: center;
+}
+
+.topHalf {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+}
+
+.searchContainer {
+    position: relative;
+    display: flex;
+    align-items: center;
+    width: 30%;
+}
+
+.searchBar {
+    margin: 15px;
+    border-radius: 20px;
+    /* Rounded corners */
+    padding: 10px 40px 10px 15px;
+    /* Padding for the text and space for the icon */
+    border: 1px solid #ccc;
+    /* Border color */
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+    /* Subtle shadow */
+    outline: none;
+    font-size: 16px;
+    width: 100%;
+}
+
+.searchBar::placeholder {
+    color: #aaa;
+    /* Placeholder text color */
+}
+
+.searchIcon {
+    position: absolute;
+    right: 25px;
+    color: #007BFF;
+    /* Icon color */
+    font-size: 18px;
+    /* Icon size */
+    pointer-events: none;
+    /* Ensures the icon doesn't block input interaction */
+}
+
+.bottomHalf {
+    background-color: #F6F6F6;
+    border-radius: 20px;
+    /* Rounded corners */
+    padding: 10px 40px 10px 15px;
+    /* Padding for the text and space for the icon */
+    border: 1px solid #ccc;
+    /* Border color */
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+    /* Subtle shadow */
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 20px 0;
+    font-family: 'Montserrat', sans-serif;
+}
+
+table,
+th,
+td {
+    border: none;
+    border-bottom: 1px solid #D3D3D3;
+    /* Remove default borders */
+}
+
+table th,
+table td {
+    border: 0px;
+    padding: 8px;
+    text-align: left;
+    font-weight:1000;
+}
+
+table th {
+    font-weight: bold;
+    color: #007BFF;
+    padding-bottom: 2%;
+}
+
+table tbody tr:nth-child(even) {
+    background-color: #f9f9f9;
+}
+
+table tbody tr:hover {
+    background-color: #f1f1f1;
+}
+
+a{
+    cursor: pointer;
+}
+
+.action-icons a {
+    text-decoration: none;
+    color: #007BFF;
+    margin-right: 10px;
+}
+
+ .action-icons a.delete-icon {
+    color: #FF0000 !important;
+
+} 
+
+.date{
+    width: 15%;
+}
+
+.sender{
+    width: 30%;
+}
+
+.message{
+    width: 45%;
+}
+
+.icon{
+    width: 5%;
+}
+
+.userTypeContainer {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: end;
+    width: 15%;
+}
+
+.sendMessage{
+    align-items: center;
+    justify-content: center;
+    display: flex;
+    flex-direction: column;
+    transform: scale(1.5);
+    margin-top: 100px;
+    width: 50%;
+    position: absolute;
+    left:25%;
+    top:20%;
+}
+
+.filePicker{
+    padding-top:10%;
+    padding-bottom:10%;
+}
+
+.submitButton {
+    background-color: #0070d7;
+    border: 3px solid #D3D3D3;
+    border-radius: 10px 10px 10px 10px;
+    color: #D3D3D3;
+    font-weight: 1000;
+    font-size: 100%;
+    width:17%;
+    padding: 0.7%;
+}
+
+.title{
+    left:5%;
+    position: absolute;
+}
+
+.form-group{
+    display: inline-flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 110%;
+}
+
+.attachment{
+    background-color: #0070d7;
+    padding: 3%;
+    border-radius: 15%;
+}

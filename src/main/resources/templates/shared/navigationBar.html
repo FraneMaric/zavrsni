@@ -1,81 +1,100 @@
-<html>
+<!DOCTYPE html>
+<html lang="en">
 <head>
-    <link rel="stylesheet" type="text/css" href="/lipota.css">
+    <link rel="stylesheet" type="text/css" href="/shared.css">
 </head>
 <body>
     <div class="navigationBar">
-        <nav>
-            <ul id="navList" class="navbar">
+        <nav id="navContainer">
+            <ul id="navList">
+                <!-- The navigation items will be dynamically appended here -->
             </ul>
-            <!--<label id="username" class="username"></label>-->
+            <div class="right-items">
+                <label id="username" class="logout username">username</label>
+                <a id="logout" class="logout" href="/korisnik/logout">Odjava</a>
+            </div>
         </nav>
     </div>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            $.ajax({
+                url: "/korisnik/sessionCheck",
+                type: "GET",
+                success: function (data) {
+                    if (data == "true") {
+                        var promises = [];
+                        
+                        // Append "Sandučić" first
+                        $('#navList').append('<li><a href="/file/inbox"><svg xmlns="http://www.w3.org/2000/svg" height="40" viewBox="0 0 512 512"><!--!Font Awesome Free 6.5.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.--><path fill="#ffffff" d="M121 32C91.6 32 66 52 58.9 80.5L1.9 308.4C.6 313.5 0 318.7 0 323.9V416c0 35.3 28.7 64 64 64H448c35.3 0 64-28.7 64-64V323.9c0-5.2-.6-10.4-1.9-15.5l-57-227.9C446 52 420.4 32 391 32H121zm0 64H391l48 192H387.8c-12.1 0-23.2 6.8-28.6 17.7l-14.3 28.6c-5.4 10.8-16.5 17.7-28.6 17.7H195.8c-12.1 0-23.2-6.8-28.6-17.7l-14.3-28.6c-5.4-10.8-16.5-17.7-28.6-17.7H73L121 96z"/></svg></a></li>');
+
+                        // Append "Pošalji poruku" next
+                        promises.push(new Promise(function(resolve, reject) {
+                            getType(function (userType) {
+                                if (userType == "admin" || userType == "postar") {
+                                    $('#navList').append('<li><a href="/file/send"><svg xmlns="http://www.w3.org/2000/svg" height="40" viewBox="0 0 512 512"><!--!Font Awesome Free 6.5.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.--><path fill="#ffffff" d="M48 64C21.5 64 0 85.5 0 112c0 15.1 7.1 29.3 19.2 38.4L236.8 313.6c11.4 8.5 27 8.5 38.4 0L492.8 150.4c12.1-9.1 19.2-23.3 19.2-38.4c0-26.5-21.5-48-48-48H48zM0 176V384c0 35.3 28.7 64 64 64H448c35.3 0 64-28.7 64-64V176L294.4 339.2c-22.8 17.1-54 17.1-76.8 0L0 176z"/></svg></a></li>');
+                                }
+                                resolve();
+                            });
+                        }));
+
+                        // Append "Svi korisnici"
+                        promises.push(new Promise(function(resolve, reject) {
+                            getType(function (userType) {
+                                if (userType == "admin") {
+                                    $('#navList').append('<li><a href="/korisnik/listAll"><svg xmlns="http://www.w3.org/2000/svg" height="40" viewBox="0 0 640 512"><!--!Font Awesome Free 6.5.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.--><path fill="#ffffff" d="M144 0a80 80 0 1 1 0 160A80 80 0 1 1 144 0zM512 0a80 80 0 1 1 0 160A80 80 0 1 1 512 0zM0 298.7C0 239.8 47.8 192 106.7 192h42.7c15.9 0 31 3.5 44.6 9.7c-1.3 7.2-1.9 14.7-1.9 22.3c0 38.2 16.8 72.5 43.3 96c-.2 0-.4 0-.7 0H21.3C9.6 320 0 310.4 0 298.7zM405.3 320c-.2 0-.4 0-.7 0c26.6-23.5 43.3-57.8 43.3-96c0-7.6-.7-15-1.9-22.3c13.6-6.3 28.7-9.7 44.6-9.7h42.7C592.2 192 640 239.8 640 298.7c0 11.8-9.6 21.3-21.3 21.3H405.3zM224 224a96 96 0 1 1 192 0 96 96 0 1 1 -192 0zM128 485.3C128 411.7 187.7 352 261.3 352H378.7C452.3 352 512 411.7 512 485.3c0 14.7-11.9 26.7-26.7 26.7H154.7c-14.7 0-26.7-11.9-26.7-26.7z"/></svg></a></li>');
+                                    $('#navList').append('<li><a href="/korisnik/listAllSender"><svg xmlns="http://www.w3.org/2000/svg" height="40" viewBox="0 0 640 512"><!--!Font Awesome Free 6.5.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.--><path fill="#ffffff" d="M224 256A128 128 0 1 0 224 0a128 128 0 1 0 0 256zm-45.7 48C79.8 304 0 383.8 0 482.3C0 498.7 13.3 512 29.7 512H322.8c-3.1-8.8-3.7-18.4-1.4-27.8l15-60.1c2.8-11.3 8.6-21.5 16.8-29.7l40.3-40.3c-32.1-31-75.7-50.1-123.9-50.1H178.3zm435.5-68.3c-15.6-15.6-40.9-15.6-56.6 0l-29.4 29.4 71 71 29.4-29.4c15.6-15.6 15.6-40.9 0-56.6l-14.4-14.4zM375.9 417c-4.1 4.1-7 9.2-8.4 14.9l-15 60.1c-1.4 5.5 .2 11.2 4.2 15.2s9.7 5.6 15.2 4.2l60.1-15c5.6-1.4 10.8-4.3 14.9-8.4L576.1 358.7l-71-71L375.9 417z"/></svg></a></li>');
+                                }
+                                resolve();
+                            });
+                        }));
+
+                        Promise.all(promises).then(function() {
+                            // Append username and "Odjava" on the right
+                            $('#username').appendTo('.right-items');
+                            getUsername();
+                        });
+                    } else {
+                        $('#navList').append('<li><a href="/korisnik/login">Prijava</a></li>');
+                        $('#navList').append('<li><a href="/korisnik/create">Registracija</a></li>');
+                    }
+                },
+                error: function (xhr, status, error) {
+                    console.error(error);
+                }
+            });
+        });
+
+        function getUsername() {
+            $.ajax({
+                url: "/korisnik/getUsername",
+                type: "GET",
+                success: function (data) {
+                    if (data != null) {
+                        document.getElementById("username").innerHTML = data;
+                    }
+                },
+                error: function (xhr, status, error) {
+                    console.error(error);
+                }
+            });
+        };
+
+        function getType(callback) {
+            $.ajax({
+                url: "/korisnik/getType",
+                type: "GET",
+                success: function (data) {
+                    if (data != null) {
+                        callback(data);
+                    }
+                },
+                error: function (xhr, status, error) {
+                    console.error(error);
+                }
+            });
+        };
+    </script>
 </body>
-
 </html>
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script>
-
-    $(document).ready(function () {
-        $.ajax({
-            url: "/korisnik/sessionCheck",
-            type: "GET",
-            success: function (data) {
-                if (data == "true") {
-                    getType(function (userType) {
-                        if (userType == "admin") {
-                            $('#navList').append('<li><a href="/korisnik/listAll">Svi korisnici</a></li>');
-                            $('#navList').append('<li><a href="/korisnik/listAllSender">Svi pošiljatelji</a></li>');
-                        }
-                    });
-                    $('#navList').append('<li><a href="/file/inbox">Sandučić</a></li>');
-                    getType(function (userType) {
-                        if (userType == "admin"||userType=="postar") {
-                            $('#navList').append('<li><a href="/file/send">Pošalji poruku</a></li>');
-                        }
-                    });
-                    $('#navList').append('<li><a href="/korisnik/logout">Odjava</a></li>');
-                    $('#navList').append('<li class="username"><label id="username" class="username"></li>');
-                        getUsername();
-                } else {
-                    $('#navList').append('<li><a href="/korisnik/login">Prijava</a></li>');
-                    $('#navList').append('<li><a href="/korisnik/create">Registracija</a></li>');
-                }
-            },
-            error: function (xhr, status, error) {
-                console.error(error);
-            }
-        });
-    });
-
-
-    function getUsername() {
-        $.ajax({
-            url: "/korisnik/getUsername",
-            type: "GET",
-            success: function (data) {
-                if (data != null) {
-                    document.getElementById("username").innerHTML = data;
-                }
-            },
-            error: function (xhr, status, error) {
-                console.error(error);
-            }
-        });
-    };
-
-    function getType(callback) {
-        $.ajax({
-            url: "/korisnik/getType",
-            type: "GET",
-            success: function (data) {
-                if (data != null) {
-                    callback(data);
-                }
-            },
-            error: function (xhr, status, error) {
-                console.error(error);
-            }
-        });
-    };
-</script>

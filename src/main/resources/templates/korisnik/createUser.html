@@ -1,37 +1,38 @@
 <html>
+
 <head>
-    <link rel="stylesheet" type="text/css" href="/test.css">
+    <link rel="stylesheet" type="text/css" href="/korisnik.css">
+    <!-- <link rel="stylesheet" type="text/css" href="/src/main/resources/static/korisnik.css"> -->
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
 </head>
+
 <body>
-    <div class="container">
-        <div th:insert="~{shared/navigationBar}"></div>
-        <div class="form-group" style="display: flex;flex-direction: column; justify-content: center;"></div>
-        <h2 style="text-align: center;">Registracija</h2>
-        <div style="display: flex;justify-content: center;">
+    <div class="registrationContrainer">
+        <div class="loginQuestion">
+            <h2>Več imaš račun?</h2>
+            <a href="/korisnik/login">Prijavi se</a>
+        </div>
+        <div class="registraionForm">
+            <h2 class="prijavaText">Registracija</h2>
             <form action="/korisnik/createNew" method="POST">
-                <div class="form-group" style="display: flex;flex-direction: column;">
-                    <label for="username" style="text-align: center;">Username:</label>
-                    <input type="email" id="username" name="username" onblur="checkDatabase()" required>
+                <div class="form-group">
+                    <input class="upisLogin" type="email" id="username" name="username" onblur="checkDatabase()" placeholder="Email" required>
                     <lable id="hidden"></lable>
                 </div>
-                <div class="form-group"style="display: flex;flex-direction: column;">
-                    <label for="text"style="text-align: center;">Ime:</label>
-                    <input type="text" id="name" name="name" required>
+                <div class="form-group">
+                    <input class="upisLogin" type="text" id="name" name="name" placeholder="Ime" required>
                 </div>
-                <div class="form-group"style="display: flex;flex-direction: column;">
-                    <label for="text"style="text-align: center;">Prezime:</label>
-                    <input type="text" id="surname" name="surname" required>
+                <div class="form-group">
+                    <input class="upisLogin" type="text" id="surname" name="surname" placeholder="Prezime" required>
                 </div>
-                <div class="form-group"style="display: flex;flex-direction: column;">
-                    <label for="password"style="text-align: center;">Password:</label>
-                    <input type="password" id="password" name="password" required>
+                <div class="form-group">
+                    <input class="upisLogin" type="password" id="password" name="password" placeholder="Lozinka" required>
                 </div>
-                <div class="form-group"style="display: flex;flex-direction: column;">
-                    <label for="text"style="text-align: center;">OIB:</label>
-                    <input type="text" id="OIB" name="OIB" required>
+                <div class="form-group">
+                    <input class="upisLogin" type="text" id="OIB" name="OIB" placeholder="OIB" required>
                 </div>
-                <div class="form-group"style="padding-top: 10px; display: flex;justify-content: center;">
-                    <button type="submit" id="createButton">Create</button>
+                <div class="form-group">
+                    <button class="submitButton" type="submit" id="createButton">Create</button>
                 </div>
             </form>
         </div>
@@ -50,7 +51,7 @@
             success: function (data) {
                 if (data == "false") {
                     document.getElementById("hidden").innerHTML = "Korisničko ime je već zauzeto!";
-                    document.getElementById("createButton").style.visibility="hidden";
+                    document.getElementById("createButton").style.visibility = "hidden";
                 } else {
                     document.getElementById("hidden").innerHTML = "";
                 }

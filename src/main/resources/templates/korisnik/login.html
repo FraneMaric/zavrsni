@@ -1,28 +1,73 @@
 <!DOCTYPE html>
 <html>
-    <head>
-        <link rel="stylesheet" type="text/css" href="/test.css">    
-    </head>
-    <body>
-        <div class="container">
-            <div th:insert="~{shared/navigationBar}"></div>
-            <div class="loginSection" id="loginSection">
-                <h2 style="text-align: center;">Prijava</h2>
-                <form action="/korisnik/loginPOST" method="post">
-                    <div class="form-group" style="display: flex;flex-direction: column;">
-                        <label for="username" style="text-align: center;">Korisničko ime:</label>
-                        <input class="upisLogin" type="text" id="username" name="username" required >
-                    </div>
-                    <div class="form-group"style="display: flex;flex-direction: column;">
-                        <label for="password" style="text-align: center;">Lozinka:</label>
-                        <input type="password" id="password" name="password" required>
-                    </div>
-                    <div class="form-group" style="padding-top: 10px; display: flex;justify-content: center;">
-                        <button type="submit" >Prijava</button>
-                    </div>
-                </form>
-            </div>
+
+<head>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="/korisnik.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+</head>
+
+<body>
+    <div class="loginContainer" id="loginContainer">
+        <div class="loginSection" id="loginSection">
+            <h2 class="prijavaText">Prijava</h2>
+            <form id="myForm" action="/korisnik/loginPOST" onsubmit="return testUsername()" method="post">
+                <div class="form-group">
+                    <input class="upisLogin" type="text" id="username" name="username" placeholder="Korisničko ime"
+                        required>
+                </div>
+                <div class="form-group">
+                    <input class="upisLogin" type="password" id="password" name="password" placeholder="Lozinka"
+                        required>
+                </div>
+                <input type="hidden" id="errorMessage" value="${error}">
+                <div class="form-group">
+                    <button id="submitButton" class="submitButton" type="submit">Prijava</button>
+                </div>
+            </form>
         </div>
-        </body>
+        <div class="registrationQuestion">
+            <h2>Nemaš račun?</h2>
+            <a href="/korisnik/create">Registriraj se</a>
+        </div>
+    </div>
+
+    <script>
+        function testUsername() {
+            // Disable form submission button to prevent multiple submissions
+            document.getElementById("submitButton").disabled = true;
+
+            var username = document.getElementById("username").value;
+            var password = document.getElementById("password").value;
+
+            $.ajax({
+                url: "/korisnik/loginCheck",
+                type: "GET", // Assuming you are posting username and password securely
+                data: { username: username, password: password },
+                success: function (data) {
+                    if (data === "true") {
+                        // If login is successful, allow form submission
+                        document.getElementById("myForm").submit();
+                    } else {
+                        // If login fails, show error message and re-enable submit button
+                        window.alert("Krivo korisničko ime ili lozinka");
+                        document.getElementById("submitButton").disabled = false;
+                    }
+                },
+                error: function (xhr, status, error) {
+                    console.error("Error status: " + status);
+                    console.error("Error response: " + xhr.responseText);
+                    console.error("Error details: " + error);
+                    // Re-enable submit button in case of error
+                    document.getElementById("submitButton").disabled = false;
+                }
+            });
+
+            // Prevent default form submission
+            return false;
+        }
+    </script>
+
+</body>
 
 </html>

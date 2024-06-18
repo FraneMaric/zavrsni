@@ -37,4 +37,8 @@ public class MailServiceImpl implements MailService {
         mailRepository.delete(mailRepository.findById(id));
     }
 
+    // public List<Mail> findMail(String searchString){
+    //     return mailRepository.findMail(searchString);
+    // }
+
 }
