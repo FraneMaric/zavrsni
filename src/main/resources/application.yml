@@ -41,8 +41,8 @@ server.port: 9041
 cloud:
     aws:
         credentials:
-            access-key: AKIASPOEHCP2XZBGASFJ
-            secret-key: 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
+            access-key: AKIATCKAQGMNYNG34O42
+            secret-key: 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
         region:
             static: eu-north-1
         stack:

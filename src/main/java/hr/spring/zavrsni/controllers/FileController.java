@@ -16,6 +16,8 @@ import org.apache.pdfbox.Loader;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.rendering.PDFRenderer;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -134,7 +136,7 @@ public class FileController {
         // String contentType = "application/octet-stream";
         // return
         // ResponseEntity.ok().contentType(MediaType.parseMediaType(contentType)).body(filResource);
-        return s3Service.download(file.getFileName());
+        return s3Service.download(file.getFilePath());
         // return
         // ResponseEntity.ok().contentType(MediaType.APPLICATION_PDF).body(filResource);
     }
@@ -210,8 +212,8 @@ public class FileController {
     public ArrayList<Mail> searchInbox(@RequestParam("search") String search, HttpSession session) {
         ArrayList<Mail> listaMailova = (ArrayList<Mail>) mailService
                 .findAllBySender(session.getAttribute("username").toString());
-                // .findMail(session.getAttribute("username").toString());
-        
+        // .findMail(session.getAttribute("username").toString());
+
         // Create an iterator to iterate over the ArrayList
         Iterator<Mail> iterator = listaMailova.iterator();
         while (iterator.hasNext()) {
@@ -223,7 +225,6 @@ public class FileController {
         }
         return listaMailova;
     }
-    
 
     @PostMapping("/decode")
     public String decodePdf417(@RequestParam("file") List<MultipartFile> files, HttpSession session) {
@@ -264,8 +265,8 @@ public class FileController {
     }
 
     @PostMapping("/uploadPDF")
-    public String uploadFile(@RequestParam("files") List<MultipartFile> files, HttpSession session) {
-        List<String> errors=new ArrayList<String>();
+    public ResponseEntity<String> uploadFile(@RequestParam("files") List<MultipartFile> files, HttpSession session) {
+        List<String> errors = new ArrayList<String>();
         for (MultipartFile file : files) {
             try {
                 // Save the uploaded file
@@ -281,7 +282,7 @@ public class FileController {
 
                 File newSavedFile = new File(newPath);
                 file.transferTo(newSavedFile);
-                // s3Service.saveFile(file);
+                s3Service.saveFile(newSavedFile);
                 FileModel model = new FileModel();
                 Mail mail = new Mail();
                 model.setFileName(file.getOriginalFilename());
@@ -309,12 +310,12 @@ public class FileController {
             System.out.println(name);
         }
         // System.out.println();
-        //return "redirect:/file/inbox";
-        String end="";
-        for(int i=0;i<errors.size();i++){
-            end+=errors.get(i);
+        // return "redirect:/file/inbox";
+        String end = "";
+        for (int i = 0; i < errors.size(); i++) {
+            end += errors.get(i);
         }
-        return end;
+         return ResponseEntity.status(HttpStatus.OK).body(end);
     }
 
     private String processPdf(byte[] pdfBytes) throws IOException, NotFoundException {
