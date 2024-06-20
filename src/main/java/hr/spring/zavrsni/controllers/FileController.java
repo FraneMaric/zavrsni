@@ -16,7 +16,11 @@ import org.apache.pdfbox.Loader;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.rendering.PDFRenderer;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.ByteArrayResource;
+import org.springframework.core.io.Resource;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -130,15 +134,16 @@ public class FileController {
     }
 
     @GetMapping("/download")
-    public byte[] download(@RequestParam("id") Long id) {
+    public ResponseEntity<Resource> download(@RequestParam("id") Long id) {
         FileModel file = fileService.findById(id);
-        // Resource filResource = new FileSystemResource(file.getFilePath());
-        // String contentType = "application/octet-stream";
-        // return
-        // ResponseEntity.ok().contentType(MediaType.parseMediaType(contentType)).body(filResource);
-        return s3Service.download(file.getFilePath());
-        // return
-        // ResponseEntity.ok().contentType(MediaType.APPLICATION_PDF).body(filResource);
+        byte[] fileContent = s3Service.download(file.getFilePath());
+
+        ByteArrayResource resource = new ByteArrayResource(fileContent);
+
+        return ResponseEntity.ok()
+                .contentType(MediaType.APPLICATION_OCTET_STREAM)
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + file.getFileName() + "\"")
+                .body(resource);
     }
 
     @GetMapping("/delete")
