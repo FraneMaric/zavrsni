@@ -306,7 +306,7 @@ public class FileController {
                 mailService.saveMail(mail);
 
             } catch (Exception e) {
-                errors.add(file.getName());
+                errors.add(file.getOriginalFilename());
             }
         }
         for (String name : errors) {
@@ -314,9 +314,9 @@ public class FileController {
         }
         // System.out.println();
         // return "redirect:/file/inbox";
-        String end = "";
+        String end = "Datoteke koje se nisu uspjele poslati: ";
         for (int i = 0; i < errors.size(); i++) {
-            end += errors.get(i);
+            end += errors.get(i) + ", ";
         }
          return ResponseEntity.status(HttpStatus.OK).body(end);
     }

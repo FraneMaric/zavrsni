@@ -60,7 +60,7 @@
             processData: false,
             contentType: false,
             success: function (data) {
-                alert("Success: " + data); // Display success message
+                alert(data); // Display success message
             },
             error: function (jqXHR, textStatus, errorThrown) {
                 var errorMsg = "Request failed: " + textStatus + "\nError: " + errorThrown + "\nResponse: " + JSON.stringify(jqXHR.responseJSON || jqXHR.responseText);

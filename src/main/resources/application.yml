@@ -13,10 +13,10 @@ spring:
         hibernate.ddl-auto: update
         #properties.hibernate.format_sql: true
         #properties.hibernate.dialect: "org.hibernate.dialect.PostgreSQL81Dialect"
-        show-sql: true
-        properties:
-            hibernate:
-            format_sql: true
+        # show-sql: true
+        # properties:
+        #     hibernate:
+        #     format_sql: true
     
     mail:
         host: smtp.googlemail.com
@@ -56,7 +56,7 @@ application:
     bucket:
         name: zavrsni
 
-logging:
-  level:
-    org.hibernate.SQL: DEBUG
-    org.hibernate.type.descriptor.sql.BasicBinder: TRACE
+# logging:
+#   level:
+#     org.hibernate.SQL: DEBUG
+#     org.hibernate.type.descriptor.sql.BasicBinder: TRACE
