@@ -215,15 +215,13 @@ public class FileController {
     @PostMapping("/searchInbox")
     @ResponseBody
     public ArrayList<Mail> searchInbox(@RequestParam("search") String search, HttpSession session) {
-        ArrayList<Mail> listaMailova = (ArrayList<Mail>) mailService
-                .findAllBySender(session.getAttribute("username").toString());
-        // .findMail(session.getAttribute("username").toString());
+        ArrayList<Mail> listaMailova = (ArrayList<Mail>)mailService.findAllBySearch(search.toLowerCase());
 
         // Create an iterator to iterate over the ArrayList
         Iterator<Mail> iterator = listaMailova.iterator();
         while (iterator.hasNext()) {
             Mail mail = iterator.next();
-            if (!mail.getMessage().contains(search)) {
+            if (!mail.getRecever().contains(session.getAttribute("username").toString())) {
                 // Remove the current element using the iterator's remove() method
                 iterator.remove();
             }
