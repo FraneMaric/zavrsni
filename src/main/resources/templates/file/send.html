@@ -22,6 +22,17 @@
         </form>
         <input class="submitButton" type="button" onclick="send()" value="Pošalji"></input>
     </div>
+    <div class="errorPopup" id="errorPopup">
+        <div class="filesError">
+            <h3 id="filesErrorText">Datoteke koje se nisu uspijele poslati: </h3>
+        </div>
+        <div class="middleLine">
+            <hr />
+        </div>
+        <div class="usernameError">
+            <h3 id="usernameErrorText">Korisnici koji ne postoje: </h3>
+        </div>
+    </div>
 </body>
 
 </html>
@@ -53,6 +64,10 @@
         for (var i = 0; i < files.length; i++) {
             formdata.append('files', files[i]);
         }
+        var usernamesError = document.getElementById('usernameErrorText');
+        var filesError = document.getElementById('filesErrorText');
+        filesError.innerHTML="Datoteke koje se nisu uspijele poslati: "
+        usernamesError.innerHTML="Korisnici koji ne postoje: "
         $.ajax({
             url: "/file/uploadPDF",
             type: "POST", // Ensure it's POST method for file upload
@@ -60,11 +75,24 @@
             processData: false,
             contentType: false,
             success: function (data) {
-                alert(data); // Display success message
+                if (data.usernames == "" && data.files == "") {
+                    alert("Sve datoteke su uspiješno poslane.")
+                } else {
+                    if (data.usernames != "") {
+                        var popup =  document.getElementById('errorPopup');
+                        popup.style.display='block';
+                        for (var k = 0; k < data.usernames.length; k++) {
+                            usernamesError.innerHTML += data.usernames[k] + ", ";
+                        }
+                        for (var k = 0; k < data.files.length; k++) {
+                            filesError.innerHTML += data.files[k] + ", ";
+                        }
+                    }
+                }
             },
             error: function (jqXHR, textStatus, errorThrown) {
                 var errorMsg = "Request failed: " + textStatus + "\nError: " + errorThrown + "\nResponse: " + JSON.stringify(jqXHR.responseJSON || jqXHR.responseText);
-                alert(errorMsg); // Display error message
+                //alert(errorMsg); // Display error message
             }
         });
     }

@@ -16,6 +16,9 @@ public interface KorisnikRepository extends JpaRepository<Korisnik, Korisnik>{
     Korisnik findByUserName(String userName);
     Korisnik findById(long id);
 
+    @Query(value="SELECT user_name FROM korisnik", nativeQuery = true)
+    List<String> getAllUsernames();
+
     @Query(value = "SELECT *FROM korisnik where type = 'postar'",nativeQuery = true)
     List<Korisnik> findAllSender();
 

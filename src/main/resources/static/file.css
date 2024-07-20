@@ -91,7 +91,7 @@ table td {
     border: 0px;
     padding: 8px;
     text-align: left;
-    font-weight:1000;
+    font-weight: 1000;
 }
 
 table th {
@@ -108,7 +108,16 @@ table tbody tr:hover {
     background-color: #f1f1f1;
 }
 
-a{
+a {
+    cursor: pointer;
+}
+
+.delete-icon {
+    border: none;
+    background-color: rgba(0, 0, 0, 0);
+}
+
+.delete-icon:hover {
     cursor: pointer;
 }
 
@@ -118,24 +127,23 @@ a{
     margin-right: 10px;
 }
 
- .action-icons a.delete-icon {
+.action-icons a.delete-icon {
     color: #FF0000 !important;
+}
 
-} 
-
-.date{
+.date {
     width: 15%;
 }
 
-.sender{
+.sender {
     width: 30%;
 }
 
-.message{
+.message {
     width: 45%;
 }
 
-.icon{
+.icon {
     width: 5%;
 }
 
@@ -147,7 +155,7 @@ a{
     width: 15%;
 }
 
-.sendMessage{
+.sendMessage {
     align-items: center;
     justify-content: center;
     display: flex;
@@ -156,13 +164,13 @@ a{
     margin-top: 100px;
     width: 50%;
     position: absolute;
-    left:25%;
-    top:20%;
+    left: 25%;
+    top: 20%;
 }
 
-.filePicker{
-    padding-top:10%;
-    padding-bottom:10%;
+.filePicker {
+    padding-top: 10%;
+    padding-bottom: 10%;
 }
 
 .submitButton {
@@ -172,24 +180,88 @@ a{
     color: #D3D3D3;
     font-weight: 1000;
     font-size: 100%;
-    width:17%;
+    width: 17%;
     padding: 0.7%;
 }
 
-.title{
-    left:5%;
+.submitButton:active {
+    background-color: #007BFF;
+}
+
+.title {
+    left: 5%;
     position: absolute;
 }
 
-.form-group{
+.form-group {
     display: inline-flex;
     align-items: center;
     justify-content: space-between;
     width: 110%;
 }
 
-.attachment{
+.attachment {
     background-color: #0070d7;
     padding: 3%;
     border-radius: 15%;
+}
+
+.deletePopup {
+    display: none;
+    background-color: white;
+    height: auto;
+    width: 40%;
+    position: absolute;
+    left: 22%;
+    top: 30%;
+    border-radius: 20px;
+    padding: 8%;
+}
+
+.deleteMessage {
+    display: flex;
+    justify-content: center;
+    font-size: 30px;
+}
+
+.buttons {
+    display: flex;
+    justify-content: space-around;
+    height: 50px;
+    margin-top: 15%;
+}
+
+.yesButton {
+    background-color: #0070d7;
+    border-radius: 20px;
+    width: 40%;
+}
+
+.noButton {
+    background-color: #FF0000;
+    border-radius: 20px;
+    width: 40%;
+}
+
+.noButton,
+.yesButton:hover {
+    cursor: pointer;
+}
+
+.errorPopup {
+    display: none;
+    background-color: white;
+    height: auto;
+    width: 50%;
+    position: absolute;
+    left: 22%;
+    top: 30%;
+    border-radius: 20px;
+    padding:2%;
+}
+
+.filesError{
+    display: flex;
+    width: 100%;
+    
 }

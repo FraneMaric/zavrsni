@@ -1,5 +1,7 @@
 package hr.spring.zavrsni.services;
 
+import java.util.List;
+
 import org.springframework.stereotype.Component;
 
 import hr.spring.zavrsni.models.Korisnik;
@@ -16,4 +18,5 @@ public interface KorisnikService {
     public boolean userNameTaken(String username);
     public void editKorisnik(Korisnik korisnik);
     public void deleteKorisnik(Korisnik korisnik);
+    public List<String> getAllUsernames();
 }

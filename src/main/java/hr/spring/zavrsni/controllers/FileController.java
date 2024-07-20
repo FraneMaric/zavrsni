@@ -32,24 +32,19 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.google.zxing.BinaryBitmap;
-import com.google.zxing.ChecksumException;
 import com.google.zxing.DecodeHintType;
-import com.google.zxing.FormatException;
-import com.google.zxing.LuminanceSource;
 import com.google.zxing.MultiFormatReader;
 import com.google.zxing.NotFoundException;
 import com.google.zxing.Result;
 import com.google.zxing.client.j2se.BufferedImageLuminanceSource;
 import com.google.zxing.common.HybridBinarizer;
-import com.google.zxing.qrcode.QRCodeReader;
-
+import hr.spring.zavrsni.models.ErrorModel;
 import hr.spring.zavrsni.models.FileModel;
 import hr.spring.zavrsni.models.Mail;
 import hr.spring.zavrsni.services.FileService;
+import hr.spring.zavrsni.services.KorisnikService;
 import hr.spring.zavrsni.services.MailService;
 import hr.spring.zavrsni.services.StorageService;
-import hr.spring.zavrsni.utility.PDF417;
-import hr.spring.zavrsni.utility.QRCodeScanner;
 import jakarta.servlet.http.HttpSession;
 
 @Controller
@@ -65,64 +60,19 @@ public class FileController {
     @Autowired
     private MailService mailService;
 
+    @Autowired
+    private KorisnikService korisnikService;
+
+    @GetMapping("/send")
+    public String send(HttpSession session, Model model) {
+        model.addAttribute("userSending", session.getAttribute("user"));
+        return "file/send";
+    }
+
     @GetMapping("/addFile")
     public String addFile(Model model) {
         // model.addAttribute("file", new File());
         return "/file/addFile";
-    }
-
-    /*
-     * @PostMapping("/upload")
-     * public String uploadFile(@RequestParam("file") MultipartFile file,
-     * HttpSession session)
-     * throws ChecksumException, FormatException {
-     * try {
-     * String filePath = "C:\\Faks\\Zavrsni\\zavrsni\\Files\\" +
-     * file.getOriginalFilename();
-     * File savedFile = new File(filePath);
-     * // file.transferTo(savedFile);
-     * 
-     * String ext = getFileExtension(file);
-     * 
-     * if (ext.equals("pdf")) {
-     * PDDocument document = Loader.loadPDF(savedFile);
-     * PDFRenderer pdfRenderer = new PDFRenderer(document);
-     * BufferedImage image = pdfRenderer.renderImage(0, 2.0f);
-     * LuminanceSource source = new BufferedImageLuminanceSource(image);
-     * BinaryBitmap bitmap = new BinaryBitmap(new HybridBinarizer(source));
-     * 
-     * String newPath = "C:\\Faks\\Zavrsni\\zavrsni\\Files\\pdf\\" +
-     * file.getOriginalFilename();
-     * QRCodeReader reader = new QRCodeReader();
-     * Result result = reader.decode(bitmap);
-     * File newSavedFile = new File(newPath);
-     * file.transferTo(newSavedFile);
-     * FileModel model = new FileModel();
-     * model.setFileName(file.getOriginalFilename());
-     * model.setFilePath(newPath);
-     * model.setType(result.toString());
-     * model.setSender(session.getAttribute("username").toString());
-     * fileService.saveFile(model);
-     * return "testiranje/dobroe";
-     * 
-     * } else if (ext.equals("image")) {
-     * // Read QR code
-     * QRCodeScanner qrCodeScanner = new QRCodeScanner();
-     * String qrCodeContent = qrCodeScanner.readQRCode(savedFile);
-     * filePath += qrCodeContent + "\\" + file.getOriginalFilename();
-     * file.transferTo(savedFile);
-     * }
-     * 
-     * return "Uspilo je";
-     * } catch (Exception e) {
-     * throw new RuntimeException(e);
-     * }
-     * }
-     */
-
-    private String getFileExtension(MultipartFile file) {
-        String originalFileName = file.getOriginalFilename();
-        return originalFileName.substring(originalFileName.lastIndexOf(".") + 1);
     }
 
     @GetMapping("/inbox")
@@ -158,64 +108,10 @@ public class FileController {
         return "redirect:/file/inbox";
     }
 
-    @GetMapping("/send")
-    public String send(HttpSession session, Model model) {
-        model.addAttribute("userSending", session.getAttribute("user"));
-        return "file/send";
-    }
-
-    @PostMapping("/sendPOST")
-    public String sendPOST(@RequestParam("recever") String recever, @RequestParam("title") String title,
-            @RequestParam("message") String message, @RequestParam("file") MultipartFile file, HttpSession session)
-            throws IOException, NotFoundException, ChecksumException, FormatException {
-        String ext = getFileExtension(file);
-
-        if (ext.equals("pdf")) {
-            PDDocument document = Loader.loadPDF(file.getBytes());
-            PDFRenderer pdfRenderer = new PDFRenderer(document);
-            BufferedImage image = pdfRenderer.renderImage(0, 2.0f);
-            LuminanceSource source = new BufferedImageLuminanceSource(image);
-            BinaryBitmap bitmap = new BinaryBitmap(new HybridBinarizer(source));
-
-            String newPath = "C:\\Faks\\Zavrsni\\zavrsni\\Files\\pdf\\" + file.getOriginalFilename();
-            QRCodeReader reader = new QRCodeReader();
-            Result result = reader.decode(bitmap);
-            File newSavedFile = new File(newPath);
-            file.transferTo(newSavedFile);
-            FileModel model = new FileModel();
-            Mail mail = new Mail();
-            model.setFileName(file.getOriginalFilename());
-            model.setFilePath(newPath);
-            model.setType(result.toString());
-            model.setSender(session.getAttribute("username").toString());
-            model.setRecever(recever);
-            fileService.saveFile(model);
-            mail.setSender(session.getAttribute("username").toString());
-            mail.setRecever(recever);
-            mail.setTitle(title);
-            mail.setMessage(message);
-            mail.setFileId(model.getId());
-            mail.setFileName(model.getFileName());
-            mailService.saveMail(mail);
-            return "redirect:/file/inbox";
-        } else if (ext.equals("png")) {
-            String filePath = "C:\\Faks\\Zavrsni\\zavrsni\\Files\\image\\" + file.getOriginalFilename();
-            File savedFile = new File(filePath);
-            // Read QR code
-            QRCodeScanner qrCodeScanner = new QRCodeScanner();
-            String qrCodeContent = qrCodeScanner.readQRCode(savedFile);
-            filePath += qrCodeContent + "\\" + file.getOriginalFilename();
-            file.transferTo(savedFile);
-            return "redirect:/file/inbox";
-        }
-
-        return "a";
-    }
-
     @PostMapping("/searchInbox")
     @ResponseBody
     public ArrayList<Mail> searchInbox(@RequestParam("search") String search, HttpSession session) {
-        ArrayList<Mail> listaMailova = (ArrayList<Mail>)mailService.findAllBySearch(search.toLowerCase());
+        ArrayList<Mail> listaMailova = (ArrayList<Mail>) mailService.findAllBySearch(search.toLowerCase());
 
         // Create an iterator to iterate over the ArrayList
         Iterator<Mail> iterator = listaMailova.iterator();
@@ -229,47 +125,9 @@ public class FileController {
         return listaMailova;
     }
 
-    @PostMapping("/decode")
-    public String decodePdf417(@RequestParam("file") List<MultipartFile> files, HttpSession session) {
-        try {
-            for (MultipartFile file : files) {
-
-                byte[] imageBytes = file.getBytes();
-                String decodedText = PDF417.readPdf417(imageBytes);
-                // return ResponseEntity.ok(decodedText);
-
-                String newPath = "C:\\Faks\\Zavrsni\\zavrsni\\Files\\pdf\\" + file.getOriginalFilename();
-
-                File newSavedFile = new File(newPath);
-                file.transferTo(newSavedFile);
-                FileModel model = new FileModel();
-                Mail mail = new Mail();
-                model.setFileName(file.getOriginalFilename());
-                model.setFilePath(newPath);
-                model.setType(".git");
-                model.setSender(session.getAttribute("username").toString());
-                String[] recever = decodedText.split(";");
-                model.setRecever(recever[3]);
-                fileService.saveFile(model);
-                // mail.setSender(session.getAttribute("username").toString());
-                mail.setSender(recever[7]);
-                mail.setRecever(recever[3]);
-                mail.setVrijeme(LocalDate.now().toString());
-                // mail.setTitle(title);
-                mail.setMessage(recever[14]);
-                mail.setFileId(model.getId());
-                mail.setFileName(model.getFileName());
-                mailService.saveMail(mail);
-            }
-            return "redirect:/file/inbox";
-        } catch (IOException | NotFoundException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
     @PostMapping("/uploadPDF")
-    public ResponseEntity<String> uploadFile(@RequestParam("files") List<MultipartFile> files, HttpSession session) {
-        List<String> errors = new ArrayList<String>();
+    public ResponseEntity<ErrorModel> uploadFile(@RequestParam("files") List<MultipartFile> files, HttpSession session) {
+        ErrorModel errorModel=new ErrorModel();
         for (MultipartFile file : files) {
             try {
                 // Save the uploaded file
@@ -278,8 +136,6 @@ public class FileController {
                 // Process the PDF file to find and read PDF417 barcode
                 String barcodeData = processPdf(pdfBytes);
                 Random rnd = new Random();
-                // String newPath = "C:\\Faks\\Zavrsni\\zavrsni\\Files\\pdf\\"+
-                // rnd.nextInt(1000000)+ file.getOriginalFilename();
                 String newPath = "C:\\Faks\\Zavrsni\\zavrsni\\Files\\pdf\\" + rnd.nextInt(1000000)
                         + file.getOriginalFilename();
 
@@ -293,32 +149,30 @@ public class FileController {
                 model.setType(".pdf");
                 model.setSender(session.getAttribute("username").toString());
                 String[] recever = barcodeData.split(";");
+                Boolean exsist = testUsername(recever[3]);
+                if (exsist == false) {
+                    throw new userNameException(recever[3]);
+                }
                 model.setRecever(recever[3]);
                 fileService.saveFile(model);
-                // mail.setSender(session.getAttribute("username").toString());
                 mail.setSender(recever[7]);
                 mail.setRecever(recever[3]);
                 mail.setVrijeme(LocalDate.now().toString());
-                // mail.setTitle(title);
                 mail.setMessage(recever[14]);
                 mail.setFileId(model.getId());
                 mail.setFileName(model.getFileName());
                 mailService.saveMail(mail);
 
+            } catch (userNameException ex) {
+                errorModel.addUsername(ex.getMessage());
             } catch (Exception e) {
-                errors.add(file.getOriginalFilename());
+                errorModel.addFile(file.getOriginalFilename());
             }
+            
         }
-        for (String name : errors) {
-            System.out.println(name);
-        }
-        // System.out.println();
-        // return "redirect:/file/inbox";
-        String end = "Datoteke koje se nisu uspjele poslati: ";
-        for (int i = 0; i < errors.size(); i++) {
-            end += errors.get(i) + ", ";
-        }
-         return ResponseEntity.status(HttpStatus.OK).body(end);
+        errorModel.removeDuplicateFiles();
+        errorModel.removeDuplicateUsernames();
+        return ResponseEntity.status(HttpStatus.OK).body(errorModel);
     }
 
     private String processPdf(byte[] pdfBytes) throws IOException, NotFoundException {
@@ -350,4 +204,33 @@ public class FileController {
         return barcodeData;
     }
 
+    private Boolean testUsername(String recever) {
+        List<String> usernames = korisnikService.getAllUsernames();
+        if (usernames.contains(recever) == true) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+}
+
+class userNameException extends Exception {
+    public userNameException() {
+
+    }
+
+    public userNameException(String message) {
+        super(message);
+    }
+}
+
+class errorException extends Exception {
+    public errorException() {
+
+    }
+
+    public errorException(String message) {
+        super(message);
+    }
 }
