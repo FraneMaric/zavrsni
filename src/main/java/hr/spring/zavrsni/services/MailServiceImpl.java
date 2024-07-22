@@ -41,4 +41,8 @@ public class MailServiceImpl implements MailService {
         return mailRepository.findAllBySearch(search);
     }
 
+    public List<Mail> findAllByNameAndSurname(String user){
+        return mailRepository.findAllByNameAndSurname(user);
+    }
+
 }

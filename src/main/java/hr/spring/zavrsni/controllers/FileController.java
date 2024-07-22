@@ -40,6 +40,7 @@ import com.google.zxing.client.j2se.BufferedImageLuminanceSource;
 import com.google.zxing.common.HybridBinarizer;
 import hr.spring.zavrsni.models.ErrorModel;
 import hr.spring.zavrsni.models.FileModel;
+import hr.spring.zavrsni.models.Korisnik;
 import hr.spring.zavrsni.models.Mail;
 import hr.spring.zavrsni.services.FileService;
 import hr.spring.zavrsni.services.KorisnikService;
@@ -77,8 +78,9 @@ public class FileController {
 
     @GetMapping("/inbox")
     public String inbox(HttpSession session, Model model) {
-        ArrayList<Mail> listaMailova = (ArrayList<Mail>) mailService
-                .findAllByRecever(session.getAttribute("username").toString());
+        // ArrayList<Mail> listaMailova = (ArrayList<Mail>) mailService
+        //         .findAllByRecever(session.getAttribute("username").toString());
+        ArrayList<Mail>listaMailova=(ArrayList<Mail>) mailService.findAllByNameAndSurname(session.getAttribute("nameSurname").toString());
         model.addAttribute("lista", listaMailova);
         return "file/inbox";
     }
@@ -149,9 +151,9 @@ public class FileController {
                 model.setType(".pdf");
                 model.setSender(session.getAttribute("username").toString());
                 String[] recever = barcodeData.split(";");
-                Boolean exsist = testUsername(recever[3]);
+                Boolean exsist = testUsername(recever[4]);
                 if (exsist == false) {
-                    throw new userNameException(recever[3]);
+                    throw new userNameException(recever[4]);
                 }
                 model.setRecever(recever[3]);
                 fileService.saveFile(model);
@@ -161,6 +163,9 @@ public class FileController {
                 mail.setMessage(recever[14]);
                 mail.setFileId(model.getId());
                 mail.setFileName(model.getFileName());
+                String[] imePrezime=recever[4].split(" ");
+                mail.setReceverIme(imePrezime[1]);
+                mail.setReceverPrezime(imePrezime[0]);
                 mailService.saveMail(mail);
 
             } catch (userNameException ex) {
@@ -205,12 +210,15 @@ public class FileController {
     }
 
     private Boolean testUsername(String recever) {
-        List<String> usernames = korisnikService.getAllUsernames();
-        if (usernames.contains(recever) == true) {
-            return true;
-        } else {
-            return false;
+        Iterable<Korisnik> koirsnici = korisnikService.getAllKorisnik();
+        Boolean exsist=false;
+        for (Korisnik korisnik : koirsnici) {
+            String kor = korisnik.getPrezime()+" "+korisnik.getIme();
+            if(kor.equalsIgnoreCase(recever)){
+                exsist=true;
+            }
         }
+        return exsist;
     }
 
 }

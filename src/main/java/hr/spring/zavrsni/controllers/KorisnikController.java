@@ -108,6 +108,7 @@ public class KorisnikController {
 					session.setAttribute("user", korisnik);
 					session.setAttribute("username", korisnik.getUserName());
 					session.setAttribute("type", korisnik.getType());
+					session.setAttribute("nameSurname", korisnik.getPrezime()+" "+korisnik.getIme());
 					model.addAttribute("user", session.getAttribute("username"));
 					return "redirect:/file/inbox";
 				} else {

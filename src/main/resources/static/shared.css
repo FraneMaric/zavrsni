@@ -13,9 +13,13 @@ body {
     justify-content: space-between;
     align-items: center;
     padding: 0 20px;
+    height:45px;
 }
 
 #navList {
+    position: absolute;
+    left:35%;
+    width: 30%;
     display: flex;
     list-style-type: none;
     margin: 0;
@@ -43,6 +47,9 @@ body {
 .right-items {
     display: flex;
     align-items: center;
+    position: absolute;
+    width: auto;
+    right: 3%;
 }
 
 .right-items a,

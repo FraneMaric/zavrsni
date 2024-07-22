@@ -3,8 +3,9 @@ body {
 }
 
 * {
+
     font-family: 'Montserrat', sans-serif;
-    color: black;
+    color: white;
 }
 
 .inbox {
@@ -257,11 +258,72 @@ a {
     left: 22%;
     top: 30%;
     border-radius: 20px;
-    padding:2%;
+    padding: 2%;
 }
 
-.filesError{
+.filesError {
     display: flex;
     width: 100%;
-    
+
+}
+
+.registrationContrainer {
+    display: inline-flex;
+    margin: auto;
+    width: 70%;
+    height: 50%;
+    justify-content: center;
+    position: absolute;
+    top: 25%;
+    left: 15%;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    padding-top: 10px;
+    justify-content: center;
+    align-items: center;
+}
+
+.prijavaText {
+    border-bottom: 2px solid white;
+    padding-bottom: 30px;
+    width: 100%;
+    text-align: center;
+    justify-content: center;
+}
+
+.registraionForm {
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    align-items: center;
+    width: 50%;
+    background-color: #0070D7;
+    border-radius: 5%;
+}
+
+.upisLogin {
+    border: 3px solid #D3D3D3;
+    border-radius: 10px 10px 10px 10px;
+    width: 170%;
+    padding: 10%;
+    background-color: #0070D7;
+}
+
+.submitButton {
+    width: 195%;
+    background-color: #F6F6F6;
+    border: 3px solid #D3D3D3;
+    border-radius: 10px 10px 10px 10px;
+    padding: 10%;
+    color: #0070d7;
+    font-weight: 1000;
+    font-size: 100%;
+}
+
+.upisLogin2::placeholder {
+    color: #D3D3D3;
+    font-weight: 1000;
 }

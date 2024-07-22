@@ -28,7 +28,21 @@ public class Mail {
     private long fileId;
     private String fileName;
     private String vrijeme; 
+    private String receverIme;
+    private String receverPrezime;
 
+    public String getReceverIme() {
+        return receverIme;
+    }
+    public void setReceverIme(String receverIme) {
+        this.receverIme = receverIme;
+    }
+    public String getReceverPrezime() {
+        return receverPrezime;
+    }
+    public void setReceverPrezime(String receverPrezime) {
+        this.receverPrezime = receverPrezime;
+    }
     public String getVrijeme() {
         return vrijeme;
     }

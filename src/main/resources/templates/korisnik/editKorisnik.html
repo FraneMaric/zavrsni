@@ -1,45 +1,52 @@
 <html>
-    <head>        
-    <!-- <link rel="stylesheet" type="text/css" href="/file.css"> -->
-    <link rel="stylesheet" type="text/css" href="/src/main/resources/static/file.css">
-    </head>
-    <body>
-        <div class="container">
-            <h2>Login</h2>
+
+<head>
+    <link rel="stylesheet" type="text/css" href="/file.css">
+    <!-- <link rel="stylesheet" type="text/css" href="/src/main/resources/static/file.css"> -->
+</head>
+
+<body>
+    <div th:insert="~{shared/navigationBar}">
+    </div>
+    <div class="registrationContrainer">
+        <div class="registraionForm">
+            <h2 class="prijavaText">Uredi korisnika</h2>
             <form action="/korisnik/editPOST" method="post">
                 <div class="form-group">
-                    <label for="username">Username:</label>
-                    <input type="text" id="userName" name="userName" th:placeholder="${korisnik.userName}" onblur="checkDatabase()">
+                    <label class="labela" for="username">Username:</label>
+                    <input class="upisLogin2" type="text" id="userName" name="userName" th:placeholder="${korisnik.userName}"
+                        onblur="checkDatabase()">
                     <label id="hidden"></label>
                 </div>
                 <div class="form-group">
-                    <label for="type">Ime:</label>
-                    <input type="text" id="name" name="name" th:placeholder="${korisnik.ime}" >
+                    <label class="labela" for="type">Ime:</label>
+                    <input class="upisLogin2" type="text" id="name" name="name" th:placeholder="${korisnik.ime}">
                 </div>
                 <div class="form-group">
-                    <label for="type">Prezime:</label>
-                    <input type="text" id="surname" name="surname" th:placeholder="${korisnik.prezime}" >
+                    <label class="labela" for="type">Prezime:</label>
+                    <input class="upisLogin2" type="text" id="surname" name="surname" th:placeholder="${korisnik.prezime}">
                 </div>
                 <div class="form-group">
-                    <label for="password">Password:</label>
-                    <input type="password" id="password" name="password" th:placeholder="${korisnik.password}" >
+                    <label class="labela" for="password">Password:</label>
+                    <input class="upisLogin2" type="password" id="password" name="password" th:placeholder="${korisnik.password}">
                 </div>
                 <div class="form-group">
-                    <label for="type">Type:</label>
-                    <input type="text" id="type" name="type" th:placeholder="${korisnik.type}" >
+                    <label class="labela" for="type">Type:</label>
+                    <input class="upisLogin2" type="text" id="type" name="type" th:placeholder="${korisnik.type}">
                 </div>
                 <div class="form-group">
-                    <input type="text" id="id" name="id" th:value="${korisnik.id}" hidden>
+                    <input class="upisLogin2" type="text" id="id" name="id" th:value="${korisnik.id}" hidden>
                 </div>
                 <div class="form-group">
-                    <input type="text" id="OIB" name="OIB" th:value="${korisnik.oib}" hidden>
+                    <input class="upisLogin2" type="text" id="OIB" name="OIB" th:value="${korisnik.oib}" hidden>
                 </div>
                 <div class="form-group">
-                    <button type="submit">Edit</button>
+                    <button class="submitButton" type="submit">Edit</button>
                 </div>
             </form>
         </div>
-        </body>
+    </div>
+</body>
 
 </html>
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
