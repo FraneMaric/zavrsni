@@ -5,7 +5,7 @@ body {
 * {
 
     font-family: 'Montserrat', sans-serif;
-    color: white;
+    color: black;
 }
 
 .inbox {
@@ -292,6 +292,8 @@ a {
     width: 100%;
     text-align: center;
     justify-content: center;
+    font-family: 'Montserrat', sans-serif;
+    color: white;
 }
 
 .registraionForm {
@@ -304,7 +306,7 @@ a {
     border-radius: 5%;
 }
 
-.upisLogin {
+.upisLogin2 {
     border: 3px solid #D3D3D3;
     border-radius: 10px 10px 10px 10px;
     width: 170%;
@@ -326,4 +328,9 @@ a {
 .upisLogin2::placeholder {
     color: #D3D3D3;
     font-weight: 1000;
+}
+
+.labela2{
+    font-family: 'Montserrat', sans-serif;
+    color: white;
 }

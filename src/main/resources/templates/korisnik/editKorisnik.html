@@ -13,25 +13,25 @@
             <h2 class="prijavaText">Uredi korisnika</h2>
             <form action="/korisnik/editPOST" method="post">
                 <div class="form-group">
-                    <label class="labela" for="username">Username:</label>
+                    <label class="labela2" for="username">Username:</label>
                     <input class="upisLogin2" type="text" id="userName" name="userName" th:placeholder="${korisnik.userName}"
                         onblur="checkDatabase()">
                     <label id="hidden"></label>
                 </div>
                 <div class="form-group">
-                    <label class="labela" for="type">Ime:</label>
+                    <label class="labela2" for="type">Ime:</label>
                     <input class="upisLogin2" type="text" id="name" name="name" th:placeholder="${korisnik.ime}">
                 </div>
                 <div class="form-group">
-                    <label class="labela" for="type">Prezime:</label>
+                    <label class="labela2" for="type">Prezime:</label>
                     <input class="upisLogin2" type="text" id="surname" name="surname" th:placeholder="${korisnik.prezime}">
                 </div>
                 <div class="form-group">
-                    <label class="labela" for="password">Password:</label>
+                    <label class="labela2" for="password">Password:</label>
                     <input class="upisLogin2" type="password" id="password" name="password" th:placeholder="${korisnik.password}">
                 </div>
                 <div class="form-group">
-                    <label class="labela" for="type">Type:</label>
+                    <label class="labela2" for="type">Type:</label>
                     <input class="upisLogin2" type="text" id="type" name="type" th:placeholder="${korisnik.type}">
                 </div>
                 <div class="form-group">
