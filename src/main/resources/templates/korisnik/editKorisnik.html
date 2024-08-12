@@ -1,38 +1,106 @@
-<html>
+<!DOCTYPE html>
+<html lang="en">
 
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit User Form</title>
     <link rel="stylesheet" type="text/css" href="/file.css">
     <!-- <link rel="stylesheet" type="text/css" href="/src/main/resources/static/file.css"> -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        function checkDatabase() {
+            var username = document.getElementById("userName").value;
+            $.ajax({
+                url: "/korisnik/usernameCheck",
+                type: "GET",
+                data: { username: username },
+                success: function (data) {
+                    if (data == "false") {
+                        document.getElementById("hidden").innerHTML = "Korisničko ime je već zauzeto!";
+                    } else {
+                        document.getElementById("hidden").innerHTML = "";
+                    }
+                },
+                error: function (xhr, status, error) {
+                    console.error(error);
+                }
+            });
+        }
+
+        function copyPlaceholderToValue() {
+            const inputs = document.querySelectorAll('.upisLogin2');
+            inputs.forEach(input => {
+                if (input.value.trim() === '') {
+                    input.value = input.placeholder;
+                }
+            });
+        }
+
+        function validateForm(event) {
+            copyPlaceholderToValue(); // Copy placeholder to value before submission if input is empty
+            
+            const inputs = document.querySelectorAll('.upisLogin2[required]');
+            let isValid = true;
+
+            inputs.forEach(input => {
+                if (input.value.trim() === '') {
+                    isValid = false;
+                    input.classList.add('error'); // Add a class to indicate error if needed
+                } else {
+                    input.classList.remove('error');
+                }
+            });
+
+            if (!isValid) {
+                event.preventDefault(); // Prevent form submission if any required field is empty
+                alert('Please fill out all required fields.');
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const form = document.querySelector('form');
+            form.addEventListener('submit', validateForm);
+        });
+    </script>
+    <style>
+        .error {
+            border-color: red;
+        }
+    </style>
 </head>
 
 <body>
-    <div th:insert="~{shared/navigationBar}">
-    </div>
+    <div th:insert="~{shared/navigationBar}"></div>
     <div class="registrationContrainer">
         <div class="registraionForm">
             <h2 class="prijavaText">Uredi korisnika</h2>
-            <form action="/korisnik/editPOST" method="post">
+            <form action="/korisnik/editPOST" method="post" novalidate>
                 <div class="form-group">
-                    <label class="labela2" for="username">Username:</label>
-                    <input class="upisLogin2" type="text" id="userName" name="userName" th:placeholder="${korisnik.userName}"
-                        onblur="checkDatabase()">
+                    <label class="labela2" for="userName">Username:</label>
+                    <input class="upisLogin2" type="text" id="userName" name="userName" th:placeholder="${korisnik.userName}" onblur="checkDatabase()" required>
                     <label id="hidden"></label>
                 </div>
                 <div class="form-group">
-                    <label class="labela2" for="type">Ime:</label>
-                    <input class="upisLogin2" type="text" id="name" name="name" th:placeholder="${korisnik.ime}">
+                    <label class="labela2" for="name">Ime:</label>
+                    <input class="upisLogin2" type="text" id="name" name="name" th:placeholder="${korisnik.ime}" required>
                 </div>
                 <div class="form-group">
-                    <label class="labela2" for="type">Prezime:</label>
-                    <input class="upisLogin2" type="text" id="surname" name="surname" th:placeholder="${korisnik.prezime}">
+                    <label class="labela2" for="surname">Prezime:</label>
+                    <input class="upisLogin2" type="text" id="surname" name="surname" th:placeholder="${korisnik.prezime}" required>
                 </div>
                 <div class="form-group">
                     <label class="labela2" for="password">Password:</label>
-                    <input class="upisLogin2" type="password" id="password" name="password" th:placeholder="${korisnik.password}">
+                    <input class="upisLogin2" type="password" id="password" name="password" th:placeholder="${korisnik.password}" required>
                 </div>
                 <div class="form-group">
-                    <label class="labela2" for="type">Type:</label>
-                    <input class="upisLogin2" type="text" id="type" name="type" th:placeholder="${korisnik.type}">
+                    <label class="labela2" for="type">Vrsta korisnika:</label>
+                    <select class="upisLogin2" id="type" name="type" required>
+                        <option value="" disabled selected>Select type</option>
+                        <option value="admin" th:selected="${korisnik.type == 'admin'}">Admin</option>
+                        <option value="user" th:selected="${korisnik.type == 'user'}">User</option>
+                        <option value="postar" th:selected="${korisnik.type == 'postar'}">Pošiljatelj</option>
+                    </select>
                 </div>
                 <div class="form-group">
                     <input class="upisLogin2" type="text" id="id" name="id" th:value="${korisnik.id}" hidden>
@@ -49,24 +117,3 @@
 </body>
 
 </html>
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script>
-    function checkDatabase() {
-        var username = document.getElementById("userName").value;
-        $.ajax({
-            url: "/korisnik/usernameCheck",
-            type: "GET",
-            data: { username: username },
-            success: function (data) {
-                if (data == "false") {
-                    document.getElementById("hidden").innerHTML = "Korisničko ime je već zauzeto!";
-                } else {
-                    document.getElementById("hidden").innerHTML = "";
-                }
-            },
-            error: function (xhr, status, error) {
-                console.error(error);
-            }
-        });
-    }
-</script>

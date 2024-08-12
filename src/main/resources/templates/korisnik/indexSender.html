@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="utf-8" />
+    <link rel="stylesheet" type="text/css" href="/file.css">
+    <!-- <link rel="stylesheet" type="text/css" href="/src/main/resources/static/file.css"> -->
+    <title>Korisnici</title>
+</head>
+
+<body>
+    <div th:insert="~{shared/navigationBar}">
+    </div>
+    <div class="inbox">
+        <div class="topHalf">
+            <h1>POPIS POŠILJATELJA</h1>
+            <div class="userTypeContainer">
+                <h4>Vrsta trenutnog korisnika:</h4>
+                <h4 th:text="${userType}">
+                    </th:text>
+                </h4>
+            </div>
+        </div>
+        <div class="bottomHalf">
+            <table border="1" cellpadding="10">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>KORISNIČKO IME</th>
+                        <th>ŠIFRA</th>
+                        <th colspan="2">AKCIJE</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="korisnik : ${listKorisnika}">
+                        <td class="date" th:text="${korisnik.id}">Product ID</td>
+                        <td class="message" th:text="${korisnik.userName}">Naziv</td>
+                        <td class="sender" th:text="${korisnik.password}">ects</td>
+                        <td class="icon"><a th:href="@{/korisnik/edit(id=${korisnik.id})}">Uredi</a></td>
+                        <td class="icon"><a th:href="@{/korisnik/delete(id=${korisnik.id})}">Izbriši</a></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</body>
+
+</html>

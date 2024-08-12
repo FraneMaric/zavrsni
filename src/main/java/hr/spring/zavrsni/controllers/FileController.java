@@ -9,6 +9,7 @@ import java.io.File;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 
@@ -31,6 +32,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.google.zxing.BarcodeFormat;
 import com.google.zxing.BinaryBitmap;
 import com.google.zxing.DecodeHintType;
 import com.google.zxing.MultiFormatReader;
@@ -79,9 +81,12 @@ public class FileController {
     @GetMapping("/inbox")
     public String inbox(HttpSession session, Model model) {
         // ArrayList<Mail> listaMailova = (ArrayList<Mail>) mailService
-        //         .findAllByRecever(session.getAttribute("username").toString());
-        ArrayList<Mail>listaMailova=(ArrayList<Mail>) mailService.findAllByNameAndSurname(session.getAttribute("nameSurname").toString());
+        // .findAllByRecever(session.getAttribute("username").toString());
+        ArrayList<Mail> listaMailova = (ArrayList<Mail>) mailService
+                .findAllByNameAndSurname(session.getAttribute("nameSurname").toString());
         model.addAttribute("lista", listaMailova);
+
+        listaMailova.addAll((ArrayList<Mail>)mailService.findAllByRecever(session.getAttribute("name").toString()));
         return "file/inbox";
     }
 
@@ -128,8 +133,9 @@ public class FileController {
     }
 
     @PostMapping("/uploadPDF")
-    public ResponseEntity<ErrorModel> uploadFile(@RequestParam("files") List<MultipartFile> files, HttpSession session) {
-        ErrorModel errorModel=new ErrorModel();
+    public ResponseEntity<ErrorModel> uploadFile(@RequestParam("files") List<MultipartFile> files,
+            HttpSession session) {
+        ErrorModel errorModel = new ErrorModel();
         for (MultipartFile file : files) {
             try {
                 // Save the uploaded file
@@ -150,22 +156,22 @@ public class FileController {
                 model.setFilePath(newPath);
                 model.setType(".pdf");
                 model.setSender(session.getAttribute("username").toString());
-                String[] recever = barcodeData.split(";");
-                Boolean exsist = testUsername(recever[4]);
+                String[] recever = barcodeData.split("\n");
+                Boolean exsist = testUsername(recever[3]);
                 if (exsist == false) {
-                    throw new userNameException(recever[4]);
+                    throw new userNameException(recever[3]);
                 }
-                model.setRecever(recever[3]);
+                model.setRecever(recever[6]);
                 fileService.saveFile(model);
-                mail.setSender(recever[7]);
+                mail.setSender(recever[6]);
                 mail.setRecever(recever[3]);
                 mail.setVrijeme(LocalDate.now().toString());
-                mail.setMessage(recever[14]);
+                mail.setMessage(recever[13]);
                 mail.setFileId(model.getId());
                 mail.setFileName(model.getFileName());
-                String[] imePrezime=recever[4].split(" ");
-                mail.setReceverIme(imePrezime[1]);
-                mail.setReceverPrezime(imePrezime[0]);
+                // String[] imePrezime = recever[4].split(" ");
+                // mail.setReceverIme(imePrezime[1]);
+                // mail.setReceverPrezime(imePrezime[0]);
                 mailService.saveMail(mail);
 
             } catch (userNameException ex) {
@@ -173,7 +179,7 @@ public class FileController {
             } catch (Exception e) {
                 errorModel.addFile(file.getOriginalFilename());
             }
-            
+
         }
         errorModel.removeDuplicateFiles();
         errorModel.removeDuplicateUsernames();
@@ -184,43 +190,70 @@ public class FileController {
         // Load the PDF document
         PDDocument document = Loader.loadPDF(pdfBytes);
 
-        // Convert the first page of the PDF to an image
+        // Create a PDF renderer
         PDFRenderer pdfRenderer = new PDFRenderer(document);
-        BufferedImage image = pdfRenderer.renderImage(0);
 
-        // Use ZXing to decode PDF417 barcode
+        // Initialize the barcode reader
         MultiFormatReader reader = new MultiFormatReader();
-        BinaryBitmap binaryBitmap = new BinaryBitmap(
-                new HybridBinarizer(
-                        new BufferedImageLuminanceSource(image)));
 
-        // Set up barcode hints (optional)
+        // Set up barcode hints
         Map<DecodeHintType, Object> hints = new HashMap<>();
         hints.put(DecodeHintType.TRY_HARDER, Boolean.TRUE);
+        hints.put(DecodeHintType.POSSIBLE_FORMATS, Collections.singletonList(BarcodeFormat.PDF_417));
 
-        Result result = reader.decode(binaryBitmap, hints);
+        String barcodeData = null;
 
-        // Get the decoded barcode data
-        String barcodeData = result.getText();
+        // Iterate through all pages to find the barcode
+        for (int i = 0; i < document.getNumberOfPages(); i++) {
+            BufferedImage image = pdfRenderer.renderImageWithDPI(i, 300);
+            BinaryBitmap binaryBitmap = new BinaryBitmap(new HybridBinarizer(new BufferedImageLuminanceSource(image)));
+
+            try {
+                Result result = reader.decode(binaryBitmap, hints);
+                barcodeData = result.getText();
+                break;
+            } catch (NotFoundException e) {
+                // Continue to the next page
+                System.out.println("No barcode found on page " + (i + 1));
+            }
+        }
 
         // Close the PDF document
         document.close();
+
+        if (barcodeData == null) {
+            System.out.println("No PDF417 barcode found in the document.");
+        }
 
         return barcodeData;
     }
 
     private Boolean testUsername(String recever) {
-        Iterable<Korisnik> koirsnici = korisnikService.getAllKorisnik();
-        Boolean exsist=false;
-        for (Korisnik korisnik : koirsnici) {
-            String kor = korisnik.getPrezime()+" "+korisnik.getIme();
-            if(kor.equalsIgnoreCase(recever)){
-                exsist=true;
+        recever = recever.trim(); // TODO: Remove all whitespaces
+        Iterable<Korisnik> korisnici = korisnikService.getAllKorisnik();
+        Boolean exsist = false;
+        for (Korisnik korisnik : korisnici) {
+            // String kor = korisnik.getPrezime() + korisnik.getIme();
+            String kor = userStringSetter(korisnik);
+            System.out.println(kor);
+            if (kor.equalsIgnoreCase(recever)) {
+                exsist = true;
             }
         }
         return exsist;
     }
 
+    private String userStringSetter(Korisnik user) {
+        String kor = "";
+        if(user.getPrezime().trim()!=""&&user.getPrezime()!=" "&&user.getPrezime()!=null){ //TODO: Testirat
+            kor=kor.concat(user.getPrezime());
+        }
+        if(user.getIme()!=null &&user.getIme()!=" "){
+            kor=kor.concat(user.getIme());
+        }
+
+        return kor;
+    }
 }
 
 class userNameException extends Exception {
