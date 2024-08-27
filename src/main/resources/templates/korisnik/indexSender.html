@@ -26,7 +26,7 @@
                 <thead>
                     <tr>
                         <th>ID</th>
-                        <th>KORISNIČKO IME</th>
+                        <th>EMAIL KORISNIKA</th>
                         <th>ŠIFRA</th>
                         <th colspan="2">AKCIJE</th>
                     </tr>
@@ -37,7 +37,7 @@
                         <td class="message" th:text="${korisnik.userName}">Naziv</td>
                         <td class="sender" th:text="${korisnik.password}">ects</td>
                         <td class="icon"><a th:href="@{/korisnik/edit(id=${korisnik.id})}">Uredi</a></td>
-                        <td class="icon"><a th:href="@{/korisnik/delete(id=${korisnik.id})}">Izbriši</a></td>
+                        <td class="icon"><a th:href="@{/korisnik/deleteSender(id=${korisnik.id})}">Izbriši</a></td>
                     </tr>
                 </tbody>
             </table>

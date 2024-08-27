@@ -197,11 +197,18 @@ public class KorisnikController {
 		return "redirect:/korisnik/listAll";
 	}
 
-	@GetMapping("/delete")
-	public String delete(@RequestParam("id") Long id, Model model) {
+	@GetMapping("/deleteUser")
+	public String deleteUser(@RequestParam("id") Long id, Model model) {
 		Korisnik korisnik = korisnikService.findKorisnikById(id);
 		korisnikService.deleteKorisnik(korisnik);
-		return "testiranje/dobroe";
+		return "redirect:/korisnik/listAll";
+	}
+
+	@GetMapping("/deleteSender")
+	public String deleteSender(@RequestParam("id") Long id, Model model) {
+		Korisnik korisnik = korisnikService.findKorisnikById(id);
+		korisnikService.deleteKorisnik(korisnik);
+		return "redirect:/korisnik/listAllSender";
 	}
 
 	private void changeUsername(String oldName, String userName) {
@@ -286,7 +293,7 @@ public class KorisnikController {
 			Korisnik korisnik=korisnikService.findKorisnikbyUsername(model.getUsername());
 			korisnik.setPotvrdio(true);
 			korisnikService.editKorisnik(korisnik);
-			return "testiranje/dobroe";
+			return "korisnik/login";
 		}
 		else{
 			return "testiranje/faliasi";
