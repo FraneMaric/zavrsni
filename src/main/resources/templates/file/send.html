@@ -8,7 +8,7 @@
 <body>
     <div th:insert="~{shared/navigationBar}"></div>
     <div class="topHalf">
-        <h1 class="title">Pošalji poruku</h1>
+        <h1 class="title">Slanje dokumenata</h1>
     </div>
     <div class="sendMessage">
         <h2>Privitak</h2>
@@ -78,7 +78,7 @@
                 if (data.usernames == "" && data.files == "") {
                     alert("Sve datoteke su uspiješno poslane.")
                 } else {
-                    if (data.usernames != "") {
+                    if (data.usernames != "" ||  data.files!="") {
                         var popup =  document.getElementById('errorPopup');
                         popup.style.display='block';
                         for (var k = 0; k < data.usernames.length; k++) {
@@ -92,7 +92,7 @@
             },
             error: function (jqXHR, textStatus, errorThrown) {
                 var errorMsg = "Request failed: " + textStatus + "\nError: " + errorThrown + "\nResponse: " + JSON.stringify(jqXHR.responseJSON || jqXHR.responseText);
-                //alert(errorMsg); // Display error message
+                alert(errorMsg); // Display error message
             }
         });
     }

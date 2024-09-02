@@ -37,12 +37,68 @@
                         <td class="message" th:text="${korisnik.userName}">Naziv</td>
                         <td class="sender" th:text="${korisnik.password}">ects</td>
                         <td class="icon"><a th:href="@{/korisnik/edit(id=${korisnik.id})}">Uredi</a></td>
-                        <td class="icon"><a th:href="@{/korisnik/deleteUser(id=${korisnik.id})}">Izbriši</a></td>
+                        <!-- <td class="icon"><a th:href="@{/korisnik/deleteUser(id=${korisnik.id})}">Izbriši</a></td> -->
+                        <td class="icon"><button th:data-username="${korisnik.userName}" th:data-userId="${korisnik.id}"
+                                onclick="addPopup(this.getAttribute('data-username'), this.getAttribute('data-userid'))">Obriši korisnika</button>
+                        </td>
                     </tr>
                 </tbody>
             </table>
         </div>
     </div>
+
+    <div class="deletePopup" id="popup">
+        <h3 class="deleteMessage">Jeste li sigurni da želite obrisati ovog korisnika?</h3>
+        <h4 class="userText" id="userText"></h4>
+        <div class="buttons">
+            <button class="yesButton" onclick="deleteMessage()">DA</button>
+            <button class="noButton" onclick="removePopup()">NE</button>
+        </div>
+    </div>
 </body>
 
 </html>
+
+<script>
+    function addPopup(korisnik, id) {
+        console.log(korisnik);
+        var popup = document.getElementById('popup');
+        var text = document.getElementById('userText');
+        text.innerHTML = "Korisnik: " + korisnik;
+        popup.style.display = 'block';
+        sessionStorage.setItem("korisnik", korisnik);
+        sessionStorage.setItem("korisnikId", id);
+    }
+
+    function removePopup() {
+        var popup = document.getElementById('popup');
+        sessionStorage.removeItem("messageId");
+        sessionStorage.removeItem("fileId");
+        popup.style.display = 'none';
+    }
+
+
+
+    function deleteMessage() {
+        var korisnik = sessionStorage.getItem("korisnik");
+        var korisnikId = sessionStorage.getItem("korisnikId");
+
+        $.ajax({
+            url: "/korisnik/deleteUser",
+            type: "GET",
+            data: { korisnik: korisnik, id: korisnikId },
+            success: function (data) {
+                var popup = document.getElementById('popup');
+                popup.style.display = 'none';
+                sessionStorage.removeItem("korisnik");
+                sessionStorage.removeItem("korisnikId");
+                location.reload();
+            },
+            error: function () {
+                console.log("Greška prilikom brisanja");
+            }
+        });
+
+        // console.log(id);
+    }
+</script>

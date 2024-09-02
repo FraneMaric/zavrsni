@@ -9,6 +9,7 @@ import java.io.File;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -86,7 +87,7 @@ public class FileController {
                 .findAllByNameAndSurname(session.getAttribute("nameSurname").toString());
         model.addAttribute("lista", listaMailova);
 
-        listaMailova.addAll((ArrayList<Mail>)mailService.findAllByRecever(session.getAttribute("name").toString()));
+        listaMailova.addAll((ArrayList<Mail>) mailService.findAllByRecever(session.getAttribute("name").toString()));
         return "file/inbox";
     }
 
@@ -205,7 +206,7 @@ public class FileController {
 
         // Iterate through all pages to find the barcode
         for (int i = 0; i < document.getNumberOfPages(); i++) {
-            BufferedImage image = pdfRenderer.renderImageWithDPI(i, 300);
+            BufferedImage image = pdfRenderer.renderImageWithDPI(i, 600);
             BinaryBitmap binaryBitmap = new BinaryBitmap(new HybridBinarizer(new BufferedImageLuminanceSource(image)));
 
             try {
@@ -228,31 +229,61 @@ public class FileController {
         return barcodeData;
     }
 
-    private Boolean testUsername(String recever) {
-        recever = recever.trim(); // TODO: Remove all whitespaces
-        Iterable<Korisnik> korisnici = korisnikService.getAllKorisnik();
-        Boolean exsist = false;
-        for (Korisnik korisnik : korisnici) {
-            // String kor = korisnik.getPrezime() + korisnik.getIme();
-            String kor = userStringSetter(korisnik);
-            System.out.println(kor);
-            if (kor.equalsIgnoreCase(recever)) {
-                exsist = true;
+
+    // private Boolean testUsername(String recever) {
+    // // recever = recever.trim();
+    // Iterable<Korisnik> korisnici = korisnikService.getAllKorisnik();
+    // Boolean exsist = false;
+    // for (Korisnik korisnik : korisnici) {
+    // // String kor = korisnik.getPrezime() + korisnik.getIme();
+    // String kor = userStringSetter(korisnik);
+    // System.out.println(kor);
+    // if (kor.equalsIgnoreCase(recever)) {
+    // exsist = true;
+    // }
+    // }
+    // return exsist;
+    // }
+
+    // private String userStringSetter(Korisnik user) {
+    // String kor = "";
+    // if(user.getPrezime().trim()!=""&&user.getPrezime()!="
+    // "&&user.getPrezime()!=null){ //TODO: Testirat
+    // kor=kor.concat(user.getPrezime());
+    // }if(user.getIme()!=null&&user.getIme()!=" ")
+
+    // {
+    // kor = kor.concat(user.getIme());
+    // }
+
+    // return kor;
+    // }
+
+    public boolean testUsername(String recever) {
+        recever = normalise(recever);
+        Iterable<Korisnik> users = korisnikService.getAllKorisnik();
+        for (Korisnik user : users) {
+
+            // Split the inputs into components (e.g., ["john", "doe"])
+            String[] parts1 = recever.split(" ");
+            String[] parts2 = (user.getIme() + " " + user.getPrezime()).split(" ");
+
+            for (int i = 0; i < parts2.length; i++) {
+                parts2[i] = normalise(parts2[i]);
+            }
+            // Sort the arrays to make the comparison order-independent
+            Arrays.sort(parts1);
+            Arrays.sort(parts2);
+
+            if (Arrays.equals(parts1, parts2)) {
+                return true;
             }
         }
-        return exsist;
+        return false;
     }
 
-    private String userStringSetter(Korisnik user) {
-        String kor = "";
-        if(user.getPrezime().trim()!=""&&user.getPrezime()!=" "&&user.getPrezime()!=null){ //TODO: Testirat
-            kor=kor.concat(user.getPrezime());
-        }
-        if(user.getIme()!=null &&user.getIme()!=" "){
-            kor=kor.concat(user.getIme());
-        }
-
-        return kor;
+    public static String normalise(String input) {
+        return input.trim().toLowerCase();
     }
 }
 

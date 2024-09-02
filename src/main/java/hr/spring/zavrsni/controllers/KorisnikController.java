@@ -69,27 +69,53 @@ public class KorisnikController {
 		}
 	}
 
-
-
 	@GetMapping("/create")
 	public String createNewKorisnikRedirect() {
 		return "korisnik/createUser";
 	}
 
 	@PostMapping("/createNew")
-	public String createNewKorisnik(String username,String name, String surname, String password, String OIB) {
-		String poruka="Poštovani,\n molimo stinsnite na link kako bi završili registraciju.\n";
+	public String createNewKorisnik(String username, String name, String surname, String password, String OIB) {
+		String poruka = "Poštovani,\n molimo stinsnite na link kako bi završili registraciju.\n";
 		Random rnd = new Random();
-		int random=rnd.nextInt(100000);
-		Korisnik korisnik = new Korisnik(username,name,surname, password,OIB);
+		int random = rnd.nextInt(100000);
+		Korisnik korisnik = new Korisnik(username, name, surname, password, OIB);
 		korisnik.setType("user");
 		korisnik.setPotvrdio(false);
 		if (isUsernameFree(username).equals("false")) {
 			return "testiranje/faliasi";
 		} else {
-			confirmOrder(username,random);
+			confirmOrder(username, random);
 			korisnikService.createKorisnik(korisnik);
-			emailService.sendEmail(username, poruka+"https://zavrsni-8d871b94b11f.herokuapp.com/korisnik/confirm?kod="+random, "Registracija korisnika");
+			emailService.sendEmail(username,
+					poruka + "https://zavrsni-8d871b94b11f.herokuapp.com/korisnik/confirm?kod=" + random,
+					"Registracija korisnika");
+			return "korisnik/login";
+		}
+	}
+
+	@GetMapping("/createSender")
+	public String createSender() {
+		return "korisnik/createSender";
+	}
+
+	@PostMapping("/createNewSender")
+	public String createNewSender(String username, String name, String password, String OIB) {
+		String poruka = "Poštovani,\n molimo stinsnite na link kako bi završili registraciju.\n";
+		Random rnd = new Random();
+		int random = rnd.nextInt(100000);
+		String surname="";
+		Korisnik korisnik = new Korisnik(username, name, surname, password, OIB);
+		korisnik.setType("postar");
+		korisnik.setPotvrdio(false);
+		if (isUsernameFree(username).equals("false")) {
+			return "testiranje/faliasi";
+		} else {
+			confirmOrder(username, random);
+			korisnikService.createKorisnik(korisnik);
+			emailService.sendEmail(username,
+					poruka + "https://zavrsni-8d871b94b11f.herokuapp.com/korisnik/confirm?kod=" + random,
+					"Registracija korisnika");
 			return "korisnik/login";
 		}
 	}
@@ -103,12 +129,12 @@ public class KorisnikController {
 	public String logIn(String username, String password, HttpSession session, Model model) {
 		Korisnik korisnik = korisnikService.findKorisnikbyUsername(username);
 		if (korisnik != null) {
-			if(korisnik.isPotvrdio()==true){
+			if (korisnik.isPotvrdio() == true) {
 				if (korisnik.getPassword().equals(password)) {
 					session.setAttribute("user", korisnik);
 					session.setAttribute("username", korisnik.getUserName());
 					session.setAttribute("type", korisnik.getType());
-					session.setAttribute("nameSurname", korisnik.getPrezime()+" "+korisnik.getIme());
+					session.setAttribute("nameSurname", korisnik.getPrezime() + " " + korisnik.getIme());
 					session.setAttribute("name", korisnik.getIme());
 					model.addAttribute("user", session.getAttribute("username"));
 					return "redirect:/file/inbox";
@@ -129,7 +155,7 @@ public class KorisnikController {
 	public String loginCheck(String username, String password, HttpSession session, Model model) {
 		Korisnik korisnik = korisnikService.findKorisnikbyUsername(username);
 		if (korisnik != null) {
-			if(korisnik.isPotvrdio()==true){
+			if (korisnik.isPotvrdio() == true) {
 				if (korisnik.getPassword().equals(password)) {
 					session.setAttribute("user", korisnik);
 					session.setAttribute("username", korisnik.getUserName());
@@ -162,7 +188,7 @@ public class KorisnikController {
 	}
 
 	@PostMapping("/editPOST")
-	public String editPost(String userName,String name,String surname, String password, String type, Long id) {
+	public String editPost(String userName, String name, String surname, String password, String type, Long id) {
 		Korisnik korisnik = korisnikService.findKorisnikById(id);
 		if (!userName.equals("")) {
 			if (korisnikService.userNameTaken(userName) == false) {
@@ -264,14 +290,12 @@ public class KorisnikController {
 	@GetMapping("/sessionCheck")
 	@ResponseBody
 	public String sessionCheck(HttpSession session) {
-		if(session.getAttributeNames().hasMoreElements()==true){
-		return "true";
-		}
-		else{
+		if (session.getAttributeNames().hasMoreElements() == true) {
+			return "true";
+		} else {
 			return "false";
 		}
 	}
-
 
 	@GetMapping("/getType")
 	@ResponseBody
@@ -285,22 +309,21 @@ public class KorisnikController {
 	}
 
 	@GetMapping("/confirm")
-	public String confirm(@RequestParam("kod")int kod){
+	public String confirm(@RequestParam("kod") int kod) {
 		PotvrdioModel model = new PotvrdioModel();
-		model=potvrdioService.findByKod(kod);
-		if(model!=null){
+		model = potvrdioService.findByKod(kod);
+		if (model != null) {
 			potvrdioService.deleteConfirm(model.getId());
-			Korisnik korisnik=korisnikService.findKorisnikbyUsername(model.getUsername());
+			Korisnik korisnik = korisnikService.findKorisnikbyUsername(model.getUsername());
 			korisnik.setPotvrdio(true);
 			korisnikService.editKorisnik(korisnik);
 			return "korisnik/login";
-		}
-		else{
+		} else {
 			return "testiranje/faliasi";
 		}
 	}
-	
-	public void confirmOrder(String username,int kod){
+
+	public void confirmOrder(String username, int kod) {
 
 		PotvrdioModel confirm = new PotvrdioModel();
 		confirm.setUsername(username);

@@ -302,8 +302,10 @@ a {
     flex-direction: column;
     align-items: center;
     width: 50%;
+    height: max-content;
     background-color: #0070D7;
     border-radius: 5%;
+    padding: 3%;
 }
 
 .upisLogin2 {
@@ -315,11 +317,12 @@ a {
 }
 
 .submitButton {
-    /* width: 195%; */
+    width: auto;
     background-color: #F6F6F6;
     border: 3px solid #D3D3D3;
     border-radius: 10px 10px 10px 10px;
-    /* padding: 10%; */
+    padding-left: 7%;
+    padding-right: 7%;
     color: #0070d7;
     font-weight: 1000;
     font-size: 100%;
