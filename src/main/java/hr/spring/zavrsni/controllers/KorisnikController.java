@@ -100,20 +100,20 @@ public class KorisnikController {
 	}
 
 	@PostMapping("/createNewSender")
-	public String createNewSender(String username, String name, String password, String OIB) {
+	public String createNewSender(String userName, String name, String password, String OIB) {
 		String poruka = "Poštovani,\n molimo stinsnite na link kako bi završili registraciju.\n";
 		Random rnd = new Random();
 		int random = rnd.nextInt(100000);
 		String surname="";
-		Korisnik korisnik = new Korisnik(username, name, surname, password, OIB);
+		Korisnik korisnik = new Korisnik(userName, name, surname, password, OIB);
 		korisnik.setType("postar");
 		korisnik.setPotvrdio(false);
-		if (isUsernameFree(username).equals("false")) {
+		if (isUsernameFree(userName).equals("false")) {
 			return "testiranje/faliasi";
 		} else {
-			confirmOrder(username, random);
+			confirmOrder(userName, random);
 			korisnikService.createKorisnik(korisnik);
-			emailService.sendEmail(username,
+			emailService.sendEmail(userName,
 					poruka + "https://zavrsni-8d871b94b11f.herokuapp.com/korisnik/confirm?kod=" + random,
 					"Registracija korisnika");
 			return "korisnik/login";

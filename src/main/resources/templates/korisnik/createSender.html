@@ -5,8 +5,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Edit User Form</title>
-    <!-- <link rel="stylesheet" type="text/css" href="/file.css"> -->
-    <link rel="stylesheet" type="text/css" href="/src/main/resources/static/file.css">
+    <link rel="stylesheet" type="text/css" href="/file.css">
+    <!-- <link rel="stylesheet" type="text/css" href="/src/main/resources/static/file.css"> -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script>
         function checkDatabase() {
@@ -74,42 +74,31 @@
     <div th:insert="~{shared/navigationBar}"></div>
     <div class="registrationContrainer">
         <div class="registraionForm">
-            <h2 class="prijavaText">Uredi korisnika</h2>
-            <form action="/korisnik/editPOST" method="post" novalidate>
+            <h2 class="prijavaText">Kreiraj pošiljatelja</h2>
+            <form action="/korisnik/createNewSender" method="post" novalidate>
                 <div class="form-group">
-                    <label class="labela2" for="userName">Username:</label>
-                    <input class="upisLogin2" type="text" id="userName" name="userName" th:placeholder="${korisnik.userName}" onblur="checkDatabase()" required>
+                    <label class="labela2" for="username">Username:</label>
+                    <input class="upisLogin2" type="text" id="userName" name="userName" onblur="checkDatabase()" required>
                     <label id="hidden"></label>
                 </div>
                 <div class="form-group">
                     <label class="labela2" for="name">Ime:</label>
-                    <input class="upisLogin2" type="text" id="name" name="name" th:placeholder="${korisnik.ime}" required>
+                    <input class="upisLogin2" type="text" id="name" name="name" required>
                 </div>
-                <div class="form-group">
+                <!-- <div class="form-group">
                     <label class="labela2" for="surname">Prezime:</label>
-                    <input class="upisLogin2" type="text" id="surname" name="surname" th:placeholder="${korisnik.prezime}" required>
-                </div>
+                    <input class="upisLogin2" type="text" id="surname" name="surname" required>
+                </div> -->
                 <div class="form-group">
                     <label class="labela2" for="password">Password:</label>
-                    <input class="upisLogin2" type="password" id="password" name="password" th:placeholder="${korisnik.password}" required>
+                    <input class="upisLogin2" type="password" id="password" name="password" required>
                 </div>
                 <div class="form-group">
-                    <label class="labela2" for="type">Vrsta korisnika:</label>
-                    <select class="upisLogin2" id="type" name="type" required>
-                        <option value="" disabled selected>Select type</option>
-                        <option value="admin" th:selected="${korisnik.type == 'admin'}">Admin</option>
-                        <option value="user" th:selected="${korisnik.type == 'user'}">User</option>
-                        <option value="postar" th:selected="${korisnik.type == 'postar'}">Pošiljatelj</option>
-                    </select>
+                    <label class="labela2" for="OIB">OIB:</label>
+                    <input class="upisLogin2" type="text" id="OIB" name="OIB">
                 </div>
                 <div class="form-group">
-                    <input class="upisLogin2" type="text" id="id" name="id" th:value="${korisnik.id}" hidden>
-                </div>
-                <div class="form-group">
-                    <input class="upisLogin2" type="text" id="OIB" name="OIB" th:value="${korisnik.oib}" hidden>
-                </div>
-                <div class="form-group">
-                    <button class="submitButton" type="submit">Edit</button>
+                    <button class="submitButton" type="submit">Kreiraj</button>
                 </div>
             </form>
         </div>
