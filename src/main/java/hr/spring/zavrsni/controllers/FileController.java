@@ -3,6 +3,7 @@ package hr.spring.zavrsni.controllers;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
+import java.util.stream.Collectors;
 
 import java.awt.image.BufferedImage;
 import java.io.File;
@@ -85,9 +86,21 @@ public class FileController {
         // .findAllByRecever(session.getAttribute("username").toString());
         ArrayList<Mail> listaMailova = (ArrayList<Mail>) mailService
                 .findAllByNameAndSurname(session.getAttribute("nameSurname").toString());
+        listaMailova.addAll(
+                (ArrayList<Mail>) mailService.findAllByNameAndSurname2(session.getAttribute("surnameName").toString()));
+        listaMailova.addAll(
+                (ArrayList<Mail>) mailService.findAllByNameAndSurname3(session.getAttribute("surnameName").toString()));
+        listaMailova.addAll(
+                (ArrayList<Mail>) mailService.findAllByNameAndSurname3(session.getAttribute("nameSurname").toString()));
         model.addAttribute("lista", listaMailova);
 
         listaMailova.addAll((ArrayList<Mail>) mailService.findAllByRecever(session.getAttribute("name").toString()));
+        listaMailova.addAll((ArrayList<Mail>) mailService.findAllById((session.getAttribute("id").toString())));
+
+        System.out.println(session.getAttribute("name"));
+        System.out.println(session.getAttribute("nameSurname"));
+        System.out.println(session.getAttribute("surnameName"));
+        System.out.println(session.getAttribute("id"));
         return "file/inbox";
     }
 
@@ -158,7 +171,7 @@ public class FileController {
                 model.setType(".pdf");
                 model.setSender(session.getAttribute("username").toString());
                 String[] recever = barcodeData.split("\n");
-                Boolean exsist = testUsername(recever[3]);
+                Boolean exsist = testUsername(recever[3],session);
                 if (exsist == false) {
                     throw new userNameException(recever[3]);
                 }
@@ -173,6 +186,7 @@ public class FileController {
                 // String[] imePrezime = recever[4].split(" ");
                 // mail.setReceverIme(imePrezime[1]);
                 // mail.setReceverPrezime(imePrezime[0]);
+                mail.setReceverIme(session.getAttribute("currUser").toString());
                 mailService.saveMail(mail);
 
             } catch (userNameException ex) {
@@ -180,6 +194,7 @@ public class FileController {
             } catch (Exception e) {
                 errorModel.addFile(file.getOriginalFilename());
             }
+            session.removeAttribute("currUser");
 
         }
         errorModel.removeDuplicateFiles();
@@ -206,7 +221,7 @@ public class FileController {
 
         // Iterate through all pages to find the barcode
         for (int i = 0; i < document.getNumberOfPages(); i++) {
-            BufferedImage image = pdfRenderer.renderImageWithDPI(i, 600);
+            BufferedImage image = pdfRenderer.renderImageWithDPI(i, 200);
             BinaryBitmap binaryBitmap = new BinaryBitmap(new HybridBinarizer(new BufferedImageLuminanceSource(image)));
 
             try {
@@ -229,37 +244,7 @@ public class FileController {
         return barcodeData;
     }
 
-
-    // private Boolean testUsername(String recever) {
-    // // recever = recever.trim();
-    // Iterable<Korisnik> korisnici = korisnikService.getAllKorisnik();
-    // Boolean exsist = false;
-    // for (Korisnik korisnik : korisnici) {
-    // // String kor = korisnik.getPrezime() + korisnik.getIme();
-    // String kor = userStringSetter(korisnik);
-    // System.out.println(kor);
-    // if (kor.equalsIgnoreCase(recever)) {
-    // exsist = true;
-    // }
-    // }
-    // return exsist;
-    // }
-
-    // private String userStringSetter(Korisnik user) {
-    // String kor = "";
-    // if(user.getPrezime().trim()!=""&&user.getPrezime()!="
-    // "&&user.getPrezime()!=null){ //TODO: Testirat
-    // kor=kor.concat(user.getPrezime());
-    // }if(user.getIme()!=null&&user.getIme()!=" ")
-
-    // {
-    // kor = kor.concat(user.getIme());
-    // }
-
-    // return kor;
-    // }
-
-    public boolean testUsername(String recever) {
+    public boolean testUsername(String recever,HttpSession session) {
         recever = normalise(recever);
         Iterable<Korisnik> users = korisnikService.getAllKorisnik();
         for (Korisnik user : users) {
@@ -268,14 +253,24 @@ public class FileController {
             String[] parts1 = recever.split(" ");
             String[] parts2 = (user.getIme() + " " + user.getPrezime()).split(" ");
 
-            for (int i = 0; i < parts2.length; i++) {
-                parts2[i] = normalise(parts2[i]);
-            }
-            // Sort the arrays to make the comparison order-independent
-            Arrays.sort(parts1);
-            Arrays.sort(parts2);
+            // Normalize and filter out empty strings
+            List<String> normalizedParts1 = Arrays.stream(parts1)
+                    .map(FileController::normalise)
+                    .filter(part -> !part.isEmpty())
+                    .collect(Collectors.toList());
 
-            if (Arrays.equals(parts1, parts2)) {
+            List<String> normalizedParts2 = Arrays.stream(parts2)
+                    .map(FileController::normalise)
+                    .filter(part -> !part.isEmpty())
+                    .collect(Collectors.toList());
+
+            // Sort the lists to make the comparison order-independent
+            normalizedParts1.sort(String::compareTo);
+            normalizedParts2.sort(String::compareTo);
+
+            // Compare the lists
+            if (normalizedParts1.equals(normalizedParts2)) {
+                session.setAttribute("currUser", user.getId());
                 return true;
             }
         }

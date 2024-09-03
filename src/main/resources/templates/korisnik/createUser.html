@@ -17,7 +17,7 @@
             <form action="/korisnik/createNew" method="POST">
                 <div class="form-group">
                     <input class="upisLogin" type="email" id="username" name="username" onblur="checkDatabase()" placeholder="Email" required>
-                    <lable id="hidden"></lable>
+                    <label id="hidden"></label>
                 </div>
                 <div class="form-group">
                     <input class="upisLogin" type="text" id="name" name="name" placeholder="Ime" required>
@@ -39,11 +39,10 @@
     </div>
 </body>
 
-</html>
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
     function checkDatabase() {
-        var username = document.getElementById("username").value;
+        var username = document.getElementById("username").value.trim();
         $.ajax({
             url: "/korisnik/usernameCheck",
             type: "GET",
@@ -62,4 +61,30 @@
             }
         });
     }
+
+    function validateForm(event) {
+        const inputs = document.querySelectorAll('.upisLogin[required]');
+        let isValid = true;
+
+        inputs.forEach(input => {
+            const value = input.value.trim();
+
+            if (value === '' || value.includes(' ')) {
+                isValid = false;
+                input.classList.add('error'); // Add a class to indicate error if needed
+            } else {
+                input.classList.remove('error');
+            }
+        });
+
+        if (!isValid) {
+            event.preventDefault(); // Prevent form submission if any required field is empty or contains spaces
+            alert('Morate ispuniti sva polja.');
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+        const form = document.querySelector('form');
+        form.addEventListener('submit', validateForm);
+    });
 </script>
