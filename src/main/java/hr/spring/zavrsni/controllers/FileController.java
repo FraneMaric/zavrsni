@@ -82,20 +82,8 @@ public class FileController {
 
     @GetMapping("/inbox")
     public String inbox(HttpSession session, Model model) {
-        // ArrayList<Mail> listaMailova = (ArrayList<Mail>) mailService
-        // .findAllByRecever(session.getAttribute("username").toString());
-        ArrayList<Mail> listaMailova = (ArrayList<Mail>) mailService
-                .findAllByNameAndSurname(session.getAttribute("nameSurname").toString());
-        listaMailova.addAll(
-                (ArrayList<Mail>) mailService.findAllByNameAndSurname2(session.getAttribute("surnameName").toString()));
-        listaMailova.addAll(
-                (ArrayList<Mail>) mailService.findAllByNameAndSurname3(session.getAttribute("surnameName").toString()));
-        listaMailova.addAll(
-                (ArrayList<Mail>) mailService.findAllByNameAndSurname3(session.getAttribute("nameSurname").toString()));
+        ArrayList<Mail> listaMailova = (ArrayList<Mail>) mailService.findAllById((session.getAttribute("id").toString()));
         model.addAttribute("lista", listaMailova);
-
-        listaMailova.addAll((ArrayList<Mail>) mailService.findAllByRecever(session.getAttribute("name").toString()));
-        listaMailova.addAll((ArrayList<Mail>) mailService.findAllById((session.getAttribute("id").toString())));
 
         System.out.println(session.getAttribute("name"));
         System.out.println(session.getAttribute("nameSurname"));
@@ -171,7 +159,7 @@ public class FileController {
                 model.setType(".pdf");
                 model.setSender(session.getAttribute("username").toString());
                 String[] recever = barcodeData.split("\n");
-                Boolean exsist = testUsername(recever[3],session);
+                Boolean exsist = testUsername(recever[3], session);
                 if (exsist == false) {
                     throw new userNameException(recever[3]);
                 }
@@ -183,10 +171,7 @@ public class FileController {
                 mail.setMessage(recever[13]);
                 mail.setFileId(model.getId());
                 mail.setFileName(model.getFileName());
-                // String[] imePrezime = recever[4].split(" ");
-                // mail.setReceverIme(imePrezime[1]);
-                // mail.setReceverPrezime(imePrezime[0]);
-                mail.setReceverIme(session.getAttribute("currUser").toString());
+                mail.setReceverId(session.getAttribute("currUser").toString());
                 mailService.saveMail(mail);
 
             } catch (userNameException ex) {
@@ -244,7 +229,7 @@ public class FileController {
         return barcodeData;
     }
 
-    public boolean testUsername(String recever,HttpSession session) {
+    public boolean testUsername(String recever, HttpSession session) {
         recever = normalise(recever);
         Iterable<Korisnik> users = korisnikService.getAllKorisnik();
         for (Korisnik user : users) {

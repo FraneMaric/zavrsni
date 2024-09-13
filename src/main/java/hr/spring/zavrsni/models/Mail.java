@@ -28,20 +28,20 @@ public class Mail {
     private long fileId;
     private String fileName;
     private String vrijeme; 
-    private String receverIme;
-    private String receverPrezime;
+    private String receverId;
+    private String senderId;
 
-    public String getReceverIme() {
-        return receverIme;
+    public String getReceverId() {
+        return receverId;
     }
-    public void setReceverIme(String receverIme) {
-        this.receverIme = receverIme;
+    public void setReceverId(String receverId) {
+        this.receverId = receverId;
     }
-    public String getReceverPrezime() {
-        return receverPrezime;
+    public String getSenderId() {
+        return senderId;
     }
-    public void setReceverPrezime(String receverPrezime) {
-        this.receverPrezime = receverPrezime;
+    public void setSenderId(String senderId) {
+        this.senderId = senderId;
     }
     public String getVrijeme() {
         return vrijeme;

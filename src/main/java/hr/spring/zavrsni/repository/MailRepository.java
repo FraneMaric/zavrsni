@@ -21,17 +21,6 @@ public interface MailRepository extends JpaRepository<Mail, Mail> {
     @Query("SELECT m FROM Mail m WHERE LOWER (m.message) LIKE LOWER (CONCAT('%',:search, '%')) OR LOWER (m.sender) LIKE LOWER (CONCAT('%', :search, '%'))")
     List<Mail> findAllBySearch(@Param("search") String search);
     
-    @Query("SELECT m FROM Mail m WHERE CONCAT(m.receverPrezime, ' ', m.receverIme) = :user")
-    List<Mail> findAllByNameAndSurname(@Param("user") String user);
-    
-    @Query("SELECT m FROM Mail m WHERE CONCAT(m.receverIme, ' ', m.receverPrezime) = :user")
-    List<Mail> findAllByNameAndSurname2(@Param("user") String user);
-    
-    @Query("SELECT m FROM Mail m WHERE TRIM(m.recever) = TRIM(:user)")
-    List<Mail> findAllByNameAndSurname3(@Param("user") String user);
-    
-    // @Query("SELECT m FROM Mail M WHERE m.recever LIKE :user")
-    // List<Mail> findAllByName(@Param("user") String user);
-    @Query("SELECT m FROM Mail m WHERE (m.receverIme)=:id")
+    @Query("SELECT m FROM Mail m WHERE (m.receverId)=:id")
     List<Mail> findAllById(String id);
 }

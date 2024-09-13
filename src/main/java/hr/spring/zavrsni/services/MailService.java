@@ -15,8 +15,4 @@ public interface MailService {
     public List<Mail> findAllBySender(String username);
     public void delete(long id);
     public List<Mail> findAllBySearch(String search);
-    public List<Mail> findAllByNameAndSurname(String user);
-    public List<Mail> findAllByNameAndSurname2(String user);
-    public List<Mail> findAllByNameAndSurname3(String user);
-    //public List<Mail> findAllByName(String user);
 }
