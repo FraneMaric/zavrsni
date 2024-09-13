@@ -7,6 +7,7 @@ import java.util.stream.Collectors;
 
 import java.awt.image.BufferedImage;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -50,6 +51,7 @@ import hr.spring.zavrsni.services.FileService;
 import hr.spring.zavrsni.services.KorisnikService;
 import hr.spring.zavrsni.services.MailService;
 import hr.spring.zavrsni.services.StorageService;
+import jakarta.mail.Multipart;
 import jakarta.servlet.http.HttpSession;
 
 @Controller
@@ -82,7 +84,8 @@ public class FileController {
 
     @GetMapping("/inbox")
     public String inbox(HttpSession session, Model model) {
-        ArrayList<Mail> listaMailova = (ArrayList<Mail>) mailService.findAllById((session.getAttribute("id").toString()));
+        ArrayList<Mail> listaMailova = (ArrayList<Mail>) mailService
+                .findAllById((session.getAttribute("id").toString()));
         model.addAttribute("lista", listaMailova);
 
         System.out.println(session.getAttribute("name"));
@@ -149,9 +152,12 @@ public class FileController {
                 String newPath = "C:\\Faks\\Zavrsni\\zavrsni\\Files\\pdf\\" + rnd.nextInt(1000000)
                         + file.getOriginalFilename();
 
+                File test = fileConverter(file);
+
                 File newSavedFile = new File(newPath);
-                file.transferTo(newSavedFile);
-                s3Service.saveFile(newSavedFile);
+                // file.transferTo(newSavedFile);
+                file.transferTo(test);
+                s3Service.saveFile(test);
                 FileModel model = new FileModel();
                 Mail mail = new Mail();
                 model.setFileName(file.getOriginalFilename());
@@ -227,6 +233,19 @@ public class FileController {
         }
 
         return barcodeData;
+    }
+
+    private File fileConverter(MultipartFile multipartFile) throws IOException {
+        // Create a temporary file
+        File convFile = new File(multipartFile.getOriginalFilename());
+        convFile.createNewFile(); // Create the file
+
+        // Write the content of the multipart file to the file
+        try (FileOutputStream fos = new FileOutputStream(convFile)) {
+            fos.write(multipartFile.getBytes());
+        }
+        
+        return convFile; // Return the file
     }
 
     public boolean testUsername(String recever, HttpSession session) {
