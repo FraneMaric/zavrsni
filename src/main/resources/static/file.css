@@ -152,6 +152,31 @@ a {
     width: 5%;
 }
 
+.date2 {
+    width: 10%;
+}
+
+.sender2 {
+    width: 20%;
+}
+
+.message2 {
+    width: 25%;
+}
+
+.receiver{
+    width: 20%;
+}
+
+.errorMessage{
+    width:20%;
+}
+
+.icon2 {
+    width: 5%;
+}
+
+
 .userTypeContainer {
     position: relative;
     display: inline-flex;

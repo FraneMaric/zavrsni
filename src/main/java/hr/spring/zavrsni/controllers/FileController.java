@@ -184,7 +184,7 @@ public class FileController {
                 mail.setErrorMessage("Poruka je uspješno poslana");
                 mail.setComplete(true);
                 mailService.saveMail(mail);
-                ErrorModel temp = new ErrorModel(file.getOriginalFilename(), "Poruka je uspješno poslana");
+                ErrorModel temp = new ErrorModel(file.getOriginalFilename(), "Poruka je uspješno poslana korisniku: "+ recever[3]);
                 errorModel.add(temp);
 
             } catch (userNameException ex) {
