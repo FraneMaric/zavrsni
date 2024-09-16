@@ -22,16 +22,8 @@
         </form>
         <input class="submitButton" type="button" onclick="send()" value="Pošalji"></input>
     </div>
-    <div class="errorPopup" id="errorPopup">
-        <div class="filesError">
-            <h3 id="filesErrorText">Datoteke koje se nisu uspijele poslati: </h3>
-        </div>
-        <div class="middleLine">
-            <hr />
-        </div>
-        <div class="usernameError">
-            <h3 id="usernameErrorText">Korisnici koji ne postoje: </h3>
-        </div>
+    <div id="errorPopup" class="errorPopup">
+        <!-- This div will be populated with the "Rezultat" headline and table -->
     </div>
 </body>
 
@@ -59,41 +51,65 @@
 
 
     function send() {
-        var formdata = new FormData();
-        var files = document.getElementById("file").files;
-        for (var i = 0; i < files.length; i++) {
-            formdata.append('files', files[i]);
-        }
-        var usernamesError = document.getElementById('usernameErrorText');
-        var filesError = document.getElementById('filesErrorText');
-        filesError.innerHTML="Datoteke koje se nisu uspijele poslati: "
-        usernamesError.innerHTML="Korisnici koji ne postoje: "
-        $.ajax({
-            url: "/file/uploadPDF",
-            type: "POST", // Ensure it's POST method for file upload
-            data: formdata,
-            processData: false,
-            contentType: false,
-            success: function (data) {
-                if (data.usernames == "" && data.files == "") {
-                    alert("Sve datoteke su uspiješno poslane.")
-                } else {
-                    if (data.usernames != "" ||  data.files!="") {
-                        var popup =  document.getElementById('errorPopup');
-                        popup.style.display='block';
-                        for (var k = 0; k < data.usernames.length; k++) {
-                            usernamesError.innerHTML += data.usernames[k] + ", ";
-                        }
-                        for (var k = 0; k < data.files.length; k++) {
-                            filesError.innerHTML += data.files[k] + ", ";
-                        }
-                    }
-                }
-            },
-            error: function (jqXHR, textStatus, errorThrown) {
-                var errorMsg = "Request failed: " + textStatus + "\nError: " + errorThrown + "\nResponse: " + JSON.stringify(jqXHR.responseJSON || jqXHR.responseText);
-                alert(errorMsg); // Display error message
-            }
-        });
+    var formdata = new FormData();
+    var files = document.getElementById("file").files;
+    for (var i = 0; i < files.length; i++) {
+        formdata.append('files', files[i]);
     }
+    $.ajax({
+        url: "/file/uploadPDF",
+        type: "POST", 
+        data: formdata,
+        processData: false,
+        contentType: false,
+        success: function (data) {
+            var popup = document.getElementById('errorPopup');
+            popup.innerHTML = ""; // Clear previous content
+
+            // Check if any status is different from the expected message
+                popup.style.display = 'block';
+
+                // Add the headline "Rezultat"
+                var headline = document.createElement('h3');
+                headline.className='rezultatText';
+                headline.setAttribute("id", "rezultatText");
+                headline.textContent = "Rezultat";
+                popup.appendChild(headline);
+
+                // Create a table inside the popup
+                var table = document.createElement('table');
+                table.className="sendTable";
+                table.setAttribute('border', '1');
+
+                // Create the header row with 'fileName' and 'status'
+                var header = table.createTHead();
+                var headerRow = header.insertRow(0);
+                var fileNameHeader = document.createElement('th');
+                fileNameHeader.appendChild(document.createTextNode('Nayiv datoteke'));
+                var statusHeader = document.createElement('th');
+                statusHeader.appendChild(document.createTextNode('Status'));
+
+                headerRow.appendChild(fileNameHeader);
+                headerRow.appendChild(statusHeader);
+
+                // Create the table body and fill it with 'fileName' and 'status'
+                var tbody = table.createTBody();
+                data.forEach(function (item) {
+                    var row = tbody.insertRow();
+                    var fileNameCell = row.insertCell();
+                    var statusCell = row.insertCell();
+
+                    fileNameCell.appendChild(document.createTextNode(item.fileName)); // Assuming fileMessage contains the file name
+                    statusCell.appendChild(document.createTextNode(item.status));
+                });
+
+                popup.appendChild(table); // Add the table to the popup
+        },
+        error: function (jqXHR, textStatus, errorThrown) {
+            var errorMsg = "Request failed: " + textStatus + "\nError: " + errorThrown + "\nResponse: " + JSON.stringify(jqXHR.responseJSON || jqXHR.responseText);
+            alert(errorMsg);
+        }
+    });
+}
+
 </script>

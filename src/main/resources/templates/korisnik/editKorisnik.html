@@ -78,20 +78,20 @@
             <form action="/korisnik/editPOST" method="post" novalidate>
                 <div class="form-group">
                     <label class="labela2" for="userName">Username:</label>
-                    <input class="upisLogin2" type="text" id="userName" name="userName" th:placeholder="${korisnik.userName}" onblur="checkDatabase()" required>
+                    <input class="upisLogin2" type="text" id="userName" name="userName" th:value="${korisnik.userName}" onblur="checkDatabase()" required>
                     <label id="hidden"></label>
                 </div>
                 <div class="form-group">
                     <label class="labela2" for="name">Ime:</label>
-                    <input class="upisLogin2" type="text" id="name" name="name" th:placeholder="${korisnik.ime}" required>
+                    <input class="upisLogin2" type="text" id="name" name="name" th:value="${korisnik.ime}" required>
                 </div>
                 <div class="form-group">
                     <label class="labela2" for="surname">Prezime:</label>
-                    <input class="upisLogin2" type="text" id="surname" name="surname" th:placeholder="${korisnik.prezime}" required>
+                    <input class="upisLogin2" type="text" id="surname" name="surname" th:value="${korisnik.prezime}" required>
                 </div>
                 <div class="form-group">
                     <label class="labela2" for="password">Password:</label>
-                    <input class="upisLogin2" type="password" id="password" name="password" th:placeholder="${korisnik.password}" required>
+                    <input class="upisLogin2" type="password" id="password" name="password" th:value="${korisnik.password}" required>
                 </div>
                 <div class="form-group">
                     <label class="labela2" for="type">Vrsta korisnika:</label>

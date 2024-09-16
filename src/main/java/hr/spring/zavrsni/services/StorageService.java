@@ -6,7 +6,10 @@ import org.apache.pdfbox.io.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
+
 import com.amazonaws.services.s3.AmazonS3;
+import com.amazonaws.services.s3.model.PutObjectRequest;
 import com.amazonaws.services.s3.model.PutObjectResult;
 import com.amazonaws.services.s3.model.S3Object;
 import com.amazonaws.services.s3.model.S3ObjectInputStream;
@@ -31,6 +34,18 @@ public class StorageService {
     public String saveFile(File file) {
         try {
             PutObjectResult result = s3.putObject(bucketName,file.getAbsolutePath(), file);
+            return result.getContentMd5();
+
+        } catch (Exception e) {
+            System.out.println(e);
+            return "Greska spremanja datoteke";
+        }
+    }
+
+    public String saveFile(MultipartFile file) {
+        try {
+            PutObjectRequest putObjectRequest = new PutObjectRequest(bucketName, file.getOriginalFilename(), file.getInputStream(), null);
+            PutObjectResult result = s3.putObject(putObjectRequest);
             return result.getContentMd5();
 
         } catch (Exception e) {

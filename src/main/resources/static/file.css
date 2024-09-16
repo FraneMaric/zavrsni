@@ -141,7 +141,11 @@ a {
 }
 
 .message {
-    width: 45%;
+    width: 35%;
+}
+
+.errorMessage{
+    
 }
 
 .icon {
@@ -255,22 +259,50 @@ a {
     cursor: pointer;
 }
 
+/* Popup styling */
 .errorPopup {
-    display: none;
-    background-color: white;
-    height: auto;
-    width: 50%;
-    position: absolute;
-    left: 22%;
-    top: 30%;
-    border-radius: 20px;
-    padding: 2%;
+    z-index: 10;
+    display: none; /* Hidden by default, shown when needed */
+    position: fixed;
+    overflow: auto;
+    height: 70%;
+    top: 15%;
+    width: 70%;
+    left: 15%;
+    background-color: #0070D7 !important;
+    border-radius: 10px 10px 10px 10px;
+}
+
+.sendTable{
+    width: 90%;
+    margin: auto;
+}
+
+.sendTable tr{
+    background-color: #0070D7 !important;
+    border-bottom: 1px solid white;
+}
+
+.sendTable td{
+    padding: 15px 0 !important;
+    color: white !important;
+}
+
+.sendTable th{
+    color: white;
+    font-size: 20px;
+    padding-left: 0px;
+}
+
+.rezultatText{
+    text-align: center;
+    color: white;
+    font-size: 35px;
 }
 
 .filesError {
     display: flex;
     width: 100%;
-
 }
 
 .registrationContrainer {
@@ -342,4 +374,17 @@ a {
 .labela2 {
     font-family: 'Montserrat', sans-serif;
     color: white;
+}
+
+.newSender{
+    width: fit-content;
+    background-color: #0070D7;
+    border-radius: 10px 10px 10px 10px;
+    padding: 10px;
+}
+
+.createText{
+    text-decoration: none;
+    color: white;
+    font-weight: bold;
 }

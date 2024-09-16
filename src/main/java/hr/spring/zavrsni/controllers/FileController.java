@@ -7,9 +7,9 @@ import java.util.stream.Collectors;
 
 import java.awt.image.BufferedImage;
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -51,7 +51,6 @@ import hr.spring.zavrsni.services.FileService;
 import hr.spring.zavrsni.services.KorisnikService;
 import hr.spring.zavrsni.services.MailService;
 import hr.spring.zavrsni.services.StorageService;
-import jakarta.mail.Multipart;
 import jakarta.servlet.http.HttpSession;
 
 @Controller
@@ -98,7 +97,8 @@ public class FileController {
     @GetMapping("/download")
     public ResponseEntity<Resource> download(@RequestParam("id") Long id) {
         FileModel file = fileService.findById(id);
-        byte[] fileContent = s3Service.download(file.getFilePath());
+        //byte[] fileContent = s3Service.download(file.getFilePath());
+        byte[] fileContent = s3Service.download(file.getFileName());
 
         ByteArrayResource resource = new ByteArrayResource(fileContent);
 
@@ -138,26 +138,22 @@ public class FileController {
     }
 
     @PostMapping("/uploadPDF")
-    public ResponseEntity<ErrorModel> uploadFile(@RequestParam("files") List<MultipartFile> files,
+    public ResponseEntity<ArrayList<ErrorModel>> uploadFile(@RequestParam("files") List<MultipartFile> files,
             HttpSession session) {
-        ErrorModel errorModel = new ErrorModel();
+        ArrayList<ErrorModel> errorModel = new ArrayList<ErrorModel>();
         for (MultipartFile file : files) {
             try {
                 // Save the uploaded file
                 byte[] pdfBytes = file.getBytes();
-
+                
                 // Process the PDF file to find and read PDF417 barcode
                 String barcodeData = processPdf(pdfBytes);
                 Random rnd = new Random();
                 String newPath = "C:\\Faks\\Zavrsni\\zavrsni\\Files\\pdf\\" + rnd.nextInt(1000000)
-                        + file.getOriginalFilename();
-
-                File test = fileConverter(file);
-
-                File newSavedFile = new File(newPath);
-                // file.transferTo(newSavedFile);
-                file.transferTo(test);
-                s3Service.saveFile(test);
+                + file.getOriginalFilename();
+                //File newSavedFile = new File(newPath);
+                //file.transferTo(newSavedFile);
+                s3Service.saveFile(file);
                 FileModel model = new FileModel();
                 Mail mail = new Mail();
                 model.setFileName(file.getOriginalFilename());
@@ -167,29 +163,77 @@ public class FileController {
                 String[] recever = barcodeData.split("\n");
                 Boolean exsist = testUsername(recever[3], session);
                 if (exsist == false) {
-                    throw new userNameException(recever[3]);
+                    session.setAttribute("receiver", recever);
+                    throw new userNameException(barcodeData);
                 }
                 model.setRecever(recever[6]);
                 fileService.saveFile(model);
                 mail.setSender(recever[6]);
                 mail.setRecever(recever[3]);
-                mail.setVrijeme(LocalDate.now().toString());
+                LocalDate currentDate = LocalDate.now();
+                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy");
+                String formatttedDate = currentDate.format(formatter);
+                mail.setVrijeme(formatttedDate);
                 mail.setMessage(recever[13]);
                 mail.setFileId(model.getId());
                 mail.setFileName(model.getFileName());
                 mail.setReceverId(session.getAttribute("currUser").toString());
+                mail.setSenderId(session.getAttribute("id").toString());
+                mail.setErrorMessage("Poruka je uspješno poslana");
+                mail.setComplete(true);
                 mailService.saveMail(mail);
+                ErrorModel temp = new ErrorModel(file.getOriginalFilename(), "Poruka je uspješno poslana");
+                errorModel.add(temp);
 
             } catch (userNameException ex) {
-                errorModel.addUsername(ex.getMessage());
+                String [] receiver = ex.getMessage().split("\n");
+                Mail mail = new Mail();
+                FileModel model = new FileModel();
+                model.setFileName(file.getOriginalFilename());
+                model.setType(".pdf");
+                model.setSender(session.getAttribute("id").toString());
+                fileService.saveFile(model);
+                mail.setRecever(receiver[3]);
+                mail.setSender(receiver[6]);
+                mail.setMessage(receiver[13]);
+                mail.setSenderId(session.getAttribute("id").toString());
+                mail.setFileId(model.getId());
+                mail.setFileName(model.getFileName());
+                LocalDate currentDate = LocalDate.now();
+                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy");
+                String formatttedDate = currentDate.format(formatter);
+                mail.setVrijeme(formatttedDate);
+                mail.setComplete(false);
+                mail.setErrorMessage("Korisnik ne postoji u bazi podataka");
+                mailService.saveMail(mail);
+                ErrorModel temp = new ErrorModel(file.getOriginalFilename(), "Korisnik "+receiver[3]+" ne postoji.");
+                errorModel.add(temp);
+                
             } catch (Exception e) {
-                errorModel.addFile(file.getOriginalFilename());
+                FileModel model = new FileModel();
+                model.setFileName(file.getOriginalFilename());
+                model.setType(".pdf");
+                model.setSender(session.getAttribute("id").toString());
+                fileService.saveFile(model);
+                Mail mail = new Mail();
+                mail.setSenderId(session.getAttribute("id").toString());
+                mail.setFileId(model.getId());
+                mail.setFileName(model.getFileName());
+                LocalDate currentDate = LocalDate.now();
+                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy");
+                String formatttedDate = currentDate.format(formatter);
+                mail.setVrijeme(formatttedDate);
+                mail.setComplete(false);
+                mail.setErrorMessage("Greška prilikom čitanja barkoda");
+                mailService.saveMail(mail);
+                ErrorModel temp = new ErrorModel(file.getOriginalFilename(), "Barkod nije pronađen na datoteci.");
+                errorModel.add(temp);
             }
             session.removeAttribute("currUser");
 
         }
-        errorModel.removeDuplicateFiles();
-        errorModel.removeDuplicateUsernames();
+        // errorModel.removeDuplicateFiles();
+        // errorModel.removeDuplicateUsernames();
         return ResponseEntity.status(HttpStatus.OK).body(errorModel);
     }
 
@@ -235,17 +279,12 @@ public class FileController {
         return barcodeData;
     }
 
-    private File fileConverter(MultipartFile multipartFile) throws IOException {
-        // Create a temporary file
-        File convFile = new File(multipartFile.getOriginalFilename());
-        convFile.createNewFile(); // Create the file
 
-        // Write the content of the multipart file to the file
-        try (FileOutputStream fos = new FileOutputStream(convFile)) {
-            fos.write(multipartFile.getBytes());
-        }
-        
-        return convFile; // Return the file
+    @GetMapping("sentItems")
+    public String sentItems(HttpSession session, Model model){
+        ArrayList<Mail> sentList= (ArrayList<Mail>) mailService.findSent(session.getAttribute("id").toString());
+        model.addAttribute("lista", sentList);
+        return "file/sentItems";
     }
 
     public boolean testUsername(String recever, HttpSession session) {

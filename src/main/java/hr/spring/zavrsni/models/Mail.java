@@ -30,7 +30,21 @@ public class Mail {
     private String vrijeme; 
     private String receverId;
     private String senderId;
+    private boolean complete;
+    private String errorMessage;
 
+    public String getErrorMessage() {
+        return errorMessage;
+    }
+    public void setErrorMessage(String errorMessage) {
+        this.errorMessage = errorMessage;
+    }
+    public boolean isComplete() {
+        return complete;
+    }
+    public void setComplete(boolean complete) {
+        this.complete = complete;
+    }
     public String getReceverId() {
         return receverId;
     }

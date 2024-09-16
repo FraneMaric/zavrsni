@@ -11,6 +11,7 @@ public interface MailService {
     public Mail saveMail(Mail mail);
     public Mail findById(Long id);
     public List<Mail> findAllById(String id);
+    public List<Mail> findSent(String id);
     public List<Mail> findAllByRecever(String username);
     public List<Mail> findAllBySender(String username);
     public void delete(long id);

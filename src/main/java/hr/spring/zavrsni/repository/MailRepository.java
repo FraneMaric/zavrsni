@@ -23,4 +23,7 @@ public interface MailRepository extends JpaRepository<Mail, Mail> {
     
     @Query("SELECT m FROM Mail m WHERE (m.receverId)=:id")
     List<Mail> findAllById(String id);
+
+    @Query("SELECT m FROM Mail m WHERE (m.senderId)=:id")
+    List<Mail> findSent(String id);
 }
