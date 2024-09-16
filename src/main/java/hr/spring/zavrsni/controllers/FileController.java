@@ -8,6 +8,7 @@ import java.util.stream.Collectors;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -19,6 +20,7 @@ import java.util.Iterator;
 import org.apache.pdfbox.Loader;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.rendering.PDFRenderer;
+import org.hibernate.loader.ast.internal.StandardBatchLoaderFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
@@ -261,7 +263,12 @@ public class FileController {
 
             try {
                 Result result = reader.decode(binaryBitmap, hints);
-                barcodeData = result.getText();
+                // barcodeData = result.getText();
+                String resultText = result.getText();
+                byte[] bytes = resultText.getBytes(StandardCharsets.ISO_8859_1); // or another encoding if you suspect it's not UTF-8
+                barcodeData = new String(bytes, StandardCharsets.UTF_8);  // Re-decode it as UTF-8
+    
+
                 break;
             } catch (NotFoundException e) {
                 // Continue to the next page
